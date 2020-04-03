@@ -1,0 +1,60 @@
+buildscript {
+  repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+      url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+  }
+
+  dependencies {
+    classpath "io.thorntail:thorntail-gradle-plugin:$thorntailVersion"
+  }
+}
+
+project(':lixbox-wildfly-util'){
+    apply plugin: 'thorntail-arquillian'
+    
+	dependencies {
+        //lixbox
+        compile(group: 'fr.lixbox.lixbox-common', name: 'lixbox-core', version: version_lixbox_common) 
+        compileOnly ("io.thorntail:webservices:$thorntailVersion")
+        compileOnly (group: 'jakarta.platform', name: 'jakarta.jakartaee-api', version: '8.0.0')
+
+
+        // ================================ Test ================================
+        testImplementation "junit:junit:4.12"
+        testImplementation ("io.thorntail:webservices:$thorntailVersion")
+        testImplementation ("io.thorntail:gradle-arquillian-adapter:$thorntailVersion")
+        testImplementation (enforcedPlatform("io.thorntail:bom-all:$thorntailVersion"))
+        testImplementation ("io.thorntail:gradle-arquillian-adapter:$thorntailVersion")
+        testImplementation 'org.jboss.arquillian.extension:arquillian-jacoco:1.0.0.Alpha9'
+        testCompileOnly (group: 'jakarta.platform', name: 'jakarta.jakartaee-api', version: '8.0.0')
+	}
+    
+    eclipse{
+        wtp{
+            facet {
+                facet name: 'jst.cdi', version: '2.0'
+            }
+        }
+    }
+	
+	sonarqube {
+		properties {
+           property "sonar.projectKey", "${config.desc_project.artefact.group}.${rootProject.name}:${project.name}"
+           property "sonar.projectName", "${project.name}"
+		   property "sonar.sources","src/main"
+		   property "sonar.tests","src/test"
+        }
+	}
+	
+	test{	    
+        systemProperty 'thorntail.filesystem.layout.class', 'org.wildfly.swarm.internal.GradleFileSystemLayout'
+        systemProperty "VERSION_THORNTAIL", thorntailVersion
+        testLogging {
+            showStandardStreams = true
+        }
+	}
+	
+}
