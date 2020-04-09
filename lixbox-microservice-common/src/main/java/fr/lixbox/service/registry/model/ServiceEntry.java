@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -124,6 +125,7 @@ public class ServiceEntry implements Serializable
     }
     
     
+    
     public boolean containsInstanceUri(String uri) 
     {
         boolean result = false;
@@ -138,6 +140,8 @@ public class ServiceEntry implements Serializable
     }
     
     
+    
+    @JsonIgnore
     public ServiceInstance getInstanceByUri(String uri) 
     {
         ServiceInstance result = null;
