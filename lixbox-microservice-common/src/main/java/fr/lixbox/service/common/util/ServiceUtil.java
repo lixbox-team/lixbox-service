@@ -137,17 +137,14 @@ public class ServiceUtil implements Serializable
             Socket s = new Socket(hostName, Integer.parseInt(port));
         )
         {
-            s.setSoTimeout(1000);
-            s.isBound();
+            s.setSoTimeout(1000);            
             state = new ServiceState();
-            state.setStatus(ServiceStatus.UP);
-            state.getChecks().add(new Check(ServiceStatus.UP, "IS SERVICE LIVE?"));
+            state.setStatus(s.isBound()?ServiceStatus.UP:ServiceStatus.DOWN);
         }
         catch (Exception e)
         {
             state = new ServiceState();
             state.setStatus(ServiceStatus.DOWN);
-            state.getChecks().add(new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?"));
         }
         return state;
     }

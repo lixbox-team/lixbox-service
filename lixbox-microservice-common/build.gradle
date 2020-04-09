@@ -14,6 +14,8 @@ project(':lixbox-microservice-common'){
         // ================================ Test ================================
 		testCompile 'junit:junit:4.12'
         testCompile 'com.github.tomakehurst:wiremock:2.19.0'
+        testCompile group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: ' 3.6.3.Final'
+        testCompile group: 'org.jboss.resteasy', name: 'resteasy-client', version: '3.6.3.Final'
 	}
     
     eclipse{
