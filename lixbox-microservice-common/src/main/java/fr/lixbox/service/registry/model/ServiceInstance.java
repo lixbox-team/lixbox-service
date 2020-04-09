@@ -20,6 +20,7 @@ import java.io.Serializable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -71,6 +72,7 @@ import fr.lixbox.service.registry.model.health.ServiceState;
  * 
  * @author ludovic.terral
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceInstance implements Serializable
 {
     // ----------- Attribut(s) -----------   

@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -49,6 +50,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @author ludovic.terral
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceState implements Serializable
 {
     // ----------- Attribut(s) -----------   
