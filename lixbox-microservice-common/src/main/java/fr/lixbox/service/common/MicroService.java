@@ -23,6 +23,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import fr.lixbox.service.registry.model.health.ServiceState;
+
 /**
  * Cette interface represente les methodes accessibles à distance
  * concernant les microservices.
@@ -39,6 +41,8 @@ public interface MicroService extends Serializable
     
 
 	// ----------- Methode -----------
-    @GET @Path("/checkHealth") boolean checkHealth();
+    @GET @Path("/health") ServiceState checkHealth();
+    @GET @Path("/health/live") ServiceState checkLive();
+    @GET @Path("/health/ready") ServiceState checkReady();
     @GET @Path("/version") String getVersion();
 }

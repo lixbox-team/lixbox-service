@@ -17,9 +17,7 @@ package fr.lixbox.service.common.client;
 
 import java.net.URI;
 
-import javax.net.ssl.SSLSession;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
@@ -33,9 +31,13 @@ import fr.lixbox.common.exceptions.BusinessException;
 import fr.lixbox.common.exceptions.ProcessusException;
 import fr.lixbox.common.util.StringUtil;
 import fr.lixbox.service.common.MicroService;
+import fr.lixbox.service.common.util.ServiceUtil;
 import fr.lixbox.service.registry.RegistryService;
 import fr.lixbox.service.registry.client.RegistryServiceClient;
 import fr.lixbox.service.registry.model.ServiceEntry;
+import fr.lixbox.service.registry.model.ServiceInstance;
+import fr.lixbox.service.registry.model.health.ServiceState;
+import fr.lixbox.service.registry.model.health.ServiceStatus;
 
 /**
  * Cette classe est le client d'accès minimal pour un microservice.
@@ -57,6 +59,7 @@ public abstract class MicroServiceClient implements MicroService
 
     protected static final String SECURE_PATH = "secure";
     
+    protected ServiceEntry serviceEntry;
     protected String serviceName = "micro-service";
     protected String serviceVersion = "0.1";
     
@@ -140,16 +143,35 @@ public abstract class MicroServiceClient implements MicroService
      * @return true si dispo
      */
     @Override
-    public boolean checkHealth()
+    public ServiceState checkHealth()
     {
-        boolean result = false;
+        ServiceState result;
         if (currentService!=null)
         {
-            result = checkHealth(currentService.getUri().toString());
+            result = ServiceUtil.checkHealth(serviceEntry.getType(), currentService.getUri().toString());
+        }
+        else {
+            result = new ServiceState(ServiceStatus.DOWN);
         }
         return result;
     }
+    
+    
 
+    @Override
+    public ServiceState checkLive()
+    {
+        return checkHealth();
+    }
+
+    
+    
+    @Override
+    public ServiceState checkReady()
+    {
+        return checkHealth();
+    }
+    
 
     
     /**
@@ -177,34 +199,6 @@ public abstract class MicroServiceClient implements MicroService
         {
             LOG.info("Empty response content :"+pe.getMessage());
             LOG.trace(pe);
-        }
-        return result;
-    }
-    
-    
-
-    /**
-     * Cette methode verifie la disponibilite du service d'enregistrement dont l'url
-     * est passée en paramètre
-     * 
-     * @param uri
-     * 
-     * @return true si disponible
-     */
-    private boolean checkHealth(String uri)
-    {
-        boolean result=false;
-        try
-        {
-            ClientBuilder cliBuilder = ClientBuilder.newBuilder();
-            cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
-            LOG.debug(cliBuilder.build().target(URI.create(uri)).request().get());
-            result = true;
-        }
-        catch (ProcessingException pe) 
-        {
-            LOG.info("FAILED TO CONNECT ON "+uri);
-            LOG.info(pe);            
         }
         return result;
     }
@@ -236,7 +230,7 @@ public abstract class MicroServiceClient implements MicroService
      * 
      * @throws ProcessusException s'il est impossible de trouver aucun service d'enregistrement actif.
      */
-    protected String getServiceURI(ServiceEntry serviceEntry)
+    protected String getServiceURI()
     {
         String serviceName="UNKNOW";
         String serviceVersion="UNKNOW";
@@ -245,19 +239,14 @@ public abstract class MicroServiceClient implements MicroService
         {
             serviceName = serviceEntry.getName();
             serviceVersion = serviceEntry.getVersion();
-            for (String uri : serviceEntry.getUris())
+            for (ServiceInstance instance : serviceEntry.getInstances())
             {
-                if (checkHealth(uri))
+                if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance.getUri()).getStatus()))
                 {   
-                    uriFound = uri;
+                    uriFound = instance.getUri();
                     break;
                 }
             }
-        }
-        if (!StringUtil.isEmpty(uriFound)&&serviceEntry!=null&&!serviceEntry.getUris().get(0).equals(uriFound))
-        {
-            serviceEntry.getUris().remove(uriFound);
-            serviceEntry.getUris().add(0, uriFound);
         }
         if (!StringUtil.isEmpty(uriFound))
         {
@@ -280,7 +269,8 @@ public abstract class MicroServiceClient implements MicroService
                 ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
                 clientBuilder = clientBuilder.connectionPoolSize(20);
                 clientBuilder.disableTrustManager();
-                String uri = getServiceURI(serviceRegistry.discoverService(serviceName, serviceVersion));
+                this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
+                String uri = getServiceURI();
                 if (!StringUtil.isEmpty(uri))
                 {
                     currentService = clientBuilder.build().target(URI.create(uri));
@@ -305,7 +295,7 @@ public abstract class MicroServiceClient implements MicroService
                 ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
                 clientBuilder = clientBuilder.connectionPoolSize(20);
                 clientBuilder.disableTrustManager();
-                String uri =  getServiceURI(serviceRegistry.discoverService(serviceName, serviceVersion));
+                String uri =  getServiceURI();
                 if (!StringUtil.isEmpty(uri) && basicAuth!=null)
                 {
                     currentSecureService = clientBuilder.build().target(URI.create(uri));
@@ -329,20 +319,18 @@ public abstract class MicroServiceClient implements MicroService
     
 
     
-    protected Object parseResponse(Response response, GenericType<?> type) throws BusinessException
+    protected <T> T parseResponse(Response response, GenericType<T> type) throws BusinessException
     {
-        Object result;
-        switch(response.getStatus())
+        T result;
+        try
         {
-            case 200:
-            case 201:
-                result = response.readEntity(type);
-                break;
-            case 404:
-                throw new BusinessException(response.readEntity(String.class));
-            default:
-                currentSecureService=null;
-                throw new ProcessusException(response.readEntity(String.class));
+            result = ServiceUtil.parseResponse(response, type);
+        }
+        catch(ProcessingException pe)
+        {
+            currentSecureService = null;
+            currentService = null;
+            throw pe;
         }
         return result;
     }

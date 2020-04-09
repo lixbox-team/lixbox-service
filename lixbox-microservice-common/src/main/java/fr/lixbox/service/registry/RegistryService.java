@@ -15,7 +15,6 @@
  ******************************************************************************/
 package fr.lixbox.service.registry;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -27,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import fr.lixbox.service.common.MicroService;
 import fr.lixbox.service.registry.model.ServiceEntry;
 
 /**
@@ -35,7 +35,7 @@ import fr.lixbox.service.registry.model.ServiceEntry;
 @Path(RegistryService.SERVICE_URI)
 @Produces({ MediaType.APPLICATION_JSON })
 @Consumes({ MediaType.APPLICATION_JSON })
-public interface RegistryService  extends Serializable
+public interface RegistryService  extends MicroService
 {  
     // ----------- Attribut(s) -----------   
     static final long serialVersionUID = 1201704311316L;
@@ -49,9 +49,6 @@ public interface RegistryService  extends Serializable
     
 
     // ----------- Methodes ----------- 
-    @GET @Path("/checkHealth") boolean checkHealth();
-    @GET @Path("/version") String getVersion();
-    
     @GET @Path("/register/{name}/{version}") boolean registerService( @PathParam("name") String name,  @PathParam("version") String version,  @QueryParam("uri") String uri);
     @DELETE @Path("/unregister/{name}/{version}") boolean unregisterService( @PathParam("name") String name,  @PathParam("version") String version,  @QueryParam("uri") String uri);
     @GET @Path("/discover/{name}/{version}") ServiceEntry discoverService( @PathParam("name") String name,  @PathParam("version") String version);

@@ -43,10 +43,12 @@ public class ServiceEntry implements Serializable
     private static final long serialVersionUID = -1981609597130085609L;
     private static final Log LOG = LogFactory.getLog(ServiceEntry.class);
     
-    
     private String name;
     private String version;
-    private List<String> uris;
+    private String endpointUri;
+    private ServiceType type;
+    private List<ServiceInstance> instances;
+    private ServiceInstance primary;
     
         
 
@@ -71,19 +73,80 @@ public class ServiceEntry implements Serializable
         this.version = version;
     }
     
+        
     
-    
-    public List<String> getUris()
+    public String getEndpointUri()
     {
-        if (uris==null)
-        {
-            uris = new ArrayList<>();
-        }
-        return uris;
+        return endpointUri;
     }
-    public void setUris(List<String> uris)
+    public void setEndpointUri(String endpointUri)
     {
-        this.uris = uris;
+        this.endpointUri = endpointUri;
+    }
+    
+    
+    
+    public ServiceType getType()
+    {
+        return type;
+    }
+    public void setType(ServiceType type)
+    {
+        this.type = type;
+    }
+    
+    
+    
+    public List<ServiceInstance> getInstances()
+    {
+        if (instances == null)
+        {
+            instances = new ArrayList<>();
+        }
+        return instances;
+    }
+    public void setInstances(List<ServiceInstance> instances)
+    {
+        this.instances = instances;
+    }
+    
+    
+    
+    public ServiceInstance getPrimary()
+    {
+        return primary;
+    }
+    public void setPrimary(ServiceInstance primary)
+    {
+        this.primary = primary;
+    }
+    
+    
+    public boolean containsInstanceUri(String uri) 
+    {
+        boolean result = false;
+        for (ServiceInstance instance : getInstances())
+        {
+            if (instance.getUri().equals(uri))
+            {
+                result = true;
+            }
+        }
+        return result;
+    }
+    
+    
+    public ServiceInstance getInstanceByUri(String uri) 
+    {
+        ServiceInstance result = null;
+        for (ServiceInstance instance : getInstances())
+        {
+            if (instance.getUri().equals(uri))
+            {
+                result = instance;
+            }
+        }
+        return result;
     }
     
     

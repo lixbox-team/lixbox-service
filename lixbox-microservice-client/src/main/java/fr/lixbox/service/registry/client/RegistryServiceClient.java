@@ -15,12 +15,10 @@
  ******************************************************************************/
 package fr.lixbox.service.registry.client;
 
-import java.net.Socket;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,9 +39,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fr.lixbox.common.exceptions.ProcessusException;
 import fr.lixbox.common.util.StringUtil;
 import fr.lixbox.io.json.JsonFileStore;
+import fr.lixbox.service.common.util.ServiceUtil;
 import fr.lixbox.service.registry.RegistryService;
 import fr.lixbox.service.registry.cdi.RegistryConfigLoader;
 import fr.lixbox.service.registry.model.ServiceEntry;
+import fr.lixbox.service.registry.model.ServiceInstance;
+import fr.lixbox.service.registry.model.health.ServiceState;
+import fr.lixbox.service.registry.model.health.ServiceStatus;
 
 /**
  * Cette classe est le client d'accès au fixed-registry-service.
@@ -79,8 +81,8 @@ public class RegistryServiceClient implements RegistryService
     {
         addRegistryServiceUri(uri);
     }
-
- 
+    
+     
 
     public static RegistryServiceClient getInstance()
     {
@@ -103,7 +105,7 @@ public class RegistryServiceClient implements RegistryService
         instance = null;
     }
 
-
+    
  
     public void init()
     {
@@ -112,7 +114,7 @@ public class RegistryServiceClient implements RegistryService
         RegistryConfigLoader loader = new RegistryConfigLoader();
         String localUri = loader.getRegistryURI();
         if (!cache.containsKey(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION) || 
-                (!StringUtil.isEmpty(localUri) && !localUri.equals(cache.get(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION).getUris().get(0))))
+                (!StringUtil.isEmpty(localUri) && !localUri.equals(cache.get(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION).getPrimary().getUri())))
         {
             ServiceEntry local = null;
             if (!StringUtil.isEmpty(localUri))
@@ -120,37 +122,50 @@ public class RegistryServiceClient implements RegistryService
                 local = new ServiceEntry();
                 local.setName(RegistryService.SERVICE_NAME);
                 local.setVersion(RegistryService.SERVICE_VERSION);
-                local.getUris().addAll(Arrays.asList(localUri));
+                local.setPrimary(new ServiceInstance(localUri));
                 storeServiceEntry(local);
                 return;
             }      
-            
-            ServiceEntry distant = null;
-            try
-            {
-                distant = getRegistryService().path(DISCOVER_PATH).path(RegistryService.SERVICE_NAME).path(RegistryService.SERVICE_VERSION).request().get().readEntity(ServiceEntry.class);
-                storeServiceEntry(distant);
-                return;
-            }
-            catch (ProcessusException e) 
-            {
-                LOG.error("UNABLE TO FIND A LIVE INSTANCE OF "+RegistryService.SERVICE_NAME+"-"+RegistryService.SERVICE_VERSION);   
-                LOG.debug(e);
-            }
                         
             ServiceEntry generic = new ServiceEntry();
             generic.setName(RegistryService.SERVICE_NAME);
             generic.setVersion(RegistryService.SERVICE_VERSION);
-            generic.getUris().addAll(
+            generic.getInstances().addAll(
                     Arrays.asList(
-                    "http://localhost:9876/api/"+RegistryService.SERVICE_NAME+"/1.0", 
-                    "http://localhost:8080/registry/api/1.0",  
-                    "http://service.dev.lan:8080/registry/api/1.0",                  
-                    "https://service.dev.lan/registry/api/1.0",
-                    "https://service.pam.lan/registry/api/1.0"));   
+                        new ServiceInstance("http://localhost:9876/api/"+RegistryService.SERVICE_NAME+"/1.0"), 
+                        new ServiceInstance("http://localhost:8080/registry/api/1.0")));   
             storeServiceEntry(generic);
         }   
     }
+
+    
+
+    @Override
+    public ServiceState checkHealth()
+    {
+        ServiceState state = new ServiceState(ServiceStatus.DOWN);
+        if (currentRegistry!=null)
+        {
+            state.setStatus(ServiceStatus.UP);
+        }
+        return state;
+    }
+    
+    
+    
+    @Override
+    public ServiceState checkLive()
+    {
+        return checkHealth();
+    }
+    
+    
+    
+    @Override
+    public ServiceState checkReady()
+    {
+        return checkHealth();
+    }  
     
     
     
@@ -424,29 +439,6 @@ public class RegistryServiceClient implements RegistryService
 
     
     /**
-     * Cette methode verifie la disponibilité du registry service. 
-     * 
-     * @return true si dispo
-     */
-    @Override
-    public boolean checkHealth()
-    {
-        boolean result = false;
-        try
-        {
-            result = checkHealth(getRegistryServiceURI());
-        }
-        catch (ProcessusException pre) 
-        {
-            LOG.info(pre.getMessage());
-            LOG.debug(pre);            
-        }
-        return result;
-    }
-
-
-    
-    /**
      * Cette methode renvoie la version courante du registry service. 
      * 
      * @return la version courante
@@ -487,23 +479,14 @@ public class RegistryServiceClient implements RegistryService
      */
     public void addRegistryServiceUri(String uri)
     {
-        if (checkHealth(uri))
+        if (ServiceStatus.UP.equals(ServiceUtil.checkHealthMicroProfileHealth(uri).getStatus()))
         {
             currentRegistry = null;
             init();
             ServiceEntry registry = cache.get(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION);
-            if (!registry.getUris().contains(uri))
-            {
-                registry.getUris().add(0, uri);
-                cache.put(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION, registry);
-                jsonFileStore.write(cache);
-            }
-            else
-            {
-                Collections.swap(registry.getUris(), 0, registry.getUris().indexOf(uri));
-                cache.put(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION, registry);
-                jsonFileStore.write(cache);
-            }
+            registry.setPrimary(registry.getInstanceByUri(uri));
+            cache.put(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION, registry);
+            jsonFileStore.write(cache);
             LOG.debug(getRegistryService());
         }
         else
@@ -521,7 +504,7 @@ public class RegistryServiceClient implements RegistryService
      */
     private WebTarget getRegistryService()
     {   
-        if(currentRegistry==null || !checkHttpHealth(currentRegistry.getUri().toString()))
+        if(currentRegistry==null || ServiceStatus.DOWN.equals(ServiceUtil.checkHealthHttp(currentRegistry.getUri().toString()).getStatus()))
         {
             ClientBuilder cliBuilder = ClientBuilder.newBuilder();
             ((ResteasyClientBuilder) cliBuilder).connectionPoolSize(20);
@@ -566,20 +549,20 @@ public class RegistryServiceClient implements RegistryService
         {
             serviceName = serviceEntry.getName();
             serviceVersion = serviceEntry.getVersion();
-            for (String uri : serviceEntry.getUris())
+            if (serviceEntry.getPrimary()!=null && ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), serviceEntry.getPrimary().getUri()).getStatus()))
             {
-                if (checkHealth(uri))
-                {   
-                    uriFound = uri;
-                    break;
+                uriFound = serviceEntry.getPrimary().getUri();
+            }
+            
+            for (ServiceInstance instance : serviceEntry.getInstances())
+            {
+                if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance.getUri()).getStatus()))
+                {
+                    uriFound = instance.getUri();
+                    serviceEntry.setPrimary(instance);
+                    storeServiceEntry(serviceEntry);
                 }
             }
-        }
-        if (!StringUtil.isEmpty(uriFound)&&serviceEntry!=null&&!serviceEntry.getUris().get(0).equals(uriFound))
-        {
-            serviceEntry.getUris().remove(uriFound);
-            serviceEntry.getUris().add(0, uriFound);
-            storeServiceEntry(serviceEntry);
         }
         if (!StringUtil.isEmpty(uriFound))
         {
@@ -589,84 +572,6 @@ public class RegistryServiceClient implements RegistryService
         {
             throw new ProcessusException("UNABLE TO FIND A LIVE INSTANCE OF "+serviceName+"-"+serviceVersion);
         }
-    }
-
-
-    
-    /**
-     * Cette methode verifie la disponibilite du service d'enregistrement dont l'url
-     * est passée en paramètre
-     * 
-     * @param uri
-     * 
-     * @return true si disponible
-     */
-    private boolean checkHealth(String uri)
-    {
-        boolean result = false;
-        if (uri!=null)
-        {
-            if (uri.startsWith("http"))        
-            {
-                result = checkHttpHealth(uri);
-            }
-            else
-            {
-                result = checkTcpHealth(uri);
-            }
-        }
-        return result;
-    }
-    
-    
-    
-    /**
-     * Cette methode verifie la santé d'un service http 
-     * @param uri
-     * 
-     * @return true si ok
-     */
-    private boolean checkHttpHealth(String uri)
-    {
-        boolean result=false;
-        try
-        {
-            ClientBuilder cliBuilder = ClientBuilder.newBuilder();
-            cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
-            WebTarget registryService = cliBuilder.build().target(URI.create(uri));
-            Response response = registryService.path("/checkHealth").request().get();
-            result = response.readEntity(Boolean.class);
-            response.close();
-        }
-        catch (ProcessingException pe) 
-        {
-            LOG.info("FAILED TO CONNECT ON "+uri, pe);            
-        }
-        return result;
-    }
-    
-    
-    
-    /**
-     * Cette methode verifie la santé d'un service tcp 
-     * @param uri
-     * 
-     * @return true si ok
-     */
-    private boolean checkTcpHealth(String uri)
-    {
-        boolean result=false;
-        String hostName = uri.substring(uri.indexOf(':')+3,uri.lastIndexOf(':'));
-        String port = uri.substring(uri.lastIndexOf(':')+1);
-        try( Socket socket = new Socket(hostName, Integer.parseInt(port)); )
-        {
-            result = socket.isBound();
-        }
-        catch (Exception e) 
-        {
-            LOG.info("FAILED TO CONNECT ON "+uri, e);            
-        }        
-        return result;
     }
     
     
@@ -679,5 +584,5 @@ public class RegistryServiceClient implements RegistryService
     {
         cache.put(entry.getName()+entry.getVersion(), entry);
         jsonFileStore.write(cache);
-    }  
+    }
 }

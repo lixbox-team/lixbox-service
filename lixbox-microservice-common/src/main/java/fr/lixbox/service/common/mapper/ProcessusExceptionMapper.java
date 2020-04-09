@@ -33,6 +33,6 @@ public class ProcessusExceptionMapper implements ExceptionMapper<ProcessusExcept
     @Override
     public Response toResponse(ProcessusException ex)
     {
-        return Response.status(500).entity(ex.getMessage()).type("text/plain").build();
+        return Response.status(503).entity(ex.getMessage()).type("text/plain").build();
     }
 }
