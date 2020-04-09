@@ -554,12 +554,12 @@ public class RegistryServiceClient implements RegistryService
                 uriFound = serviceEntry.getPrimary().getUri();
             }
             
-            for (ServiceInstance instance : serviceEntry.getInstances())
+            for (ServiceInstance servInstance : serviceEntry.getInstances())
             {
-                if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance.getUri()).getStatus()))
+                if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), servInstance.getUri()).getStatus()))
                 {
-                    uriFound = instance.getUri();
-                    serviceEntry.setPrimary(instance);
+                    uriFound = servInstance.getUri();
+                    serviceEntry.setPrimary(servInstance);
                     storeServiceEntry(serviceEntry);
                 }
             }
