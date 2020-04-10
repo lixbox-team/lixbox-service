@@ -18,6 +18,7 @@ package fr.lixbox.service.registry.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,6 +27,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fr.lixbox.service.registry.model.health.ServiceStatus;
 
 /**
  * Cette classe represente un entrée de service
@@ -85,6 +88,14 @@ public class ServiceEntry implements Serializable
     public void setEndpointUri(String endpointUri)
     {
         this.endpointUri = endpointUri;
+    }
+    
+    
+    
+    public ServiceStatus getStatus()
+    {
+        Optional<ServiceInstance> found = getInstances().stream().filter(x->x.isReady()).findFirst();
+        return found.isPresent()?ServiceStatus.UP:ServiceStatus.DOWN;                
     }
     
     
