@@ -26,6 +26,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import fr.lixbox.common.exceptions.BusinessException;
 import fr.lixbox.common.exceptions.ProcessusException;
 import fr.lixbox.service.registry.model.ServiceType;
@@ -82,17 +84,21 @@ public class ServiceUtil implements Serializable
             cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
             state = parseResponse(cliBuilder.build().target(URI.create(uri+"/health")).request().get(), new GenericType<ServiceState>(){});
         }
-        catch (BusinessException pe) 
+        catch (BusinessException e) 
         {
             state = new ServiceState();
             state.setStatus(ServiceStatus.DOWN);
-            state.getChecks().add(new Check(ServiceStatus.DOWN, "IS SERVICE READY?"));
+            Check check = new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?");
+            check.getData().put("error", ExceptionUtils.getMessage(e));
+            state.getChecks().add(check);
         }
         catch (ProcessingException pe) 
         {
             state = new ServiceState();
-            state.setStatus(ServiceStatus.DOWN);
-            state.getChecks().add(new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?"));
+            state.setStatus(ServiceStatus.DOWN);            
+            Check check = new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?");
+            check.getData().put("error", ExceptionUtils.getMessage(pe));
+            state.getChecks().add(check);
         }
         return state;
     }
@@ -119,7 +125,9 @@ public class ServiceUtil implements Serializable
         catch (ProcessingException pe) 
         {
             state.setStatus(ServiceStatus.DOWN);
-            state.getChecks().add(new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?"));
+            Check check = new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?");
+            check.getData().put("error", ExceptionUtils.getMessage(pe));
+            state.getChecks().add(check);
         }
         return state;
     }
@@ -145,6 +153,9 @@ public class ServiceUtil implements Serializable
         {
             state = new ServiceState();
             state.setStatus(ServiceStatus.DOWN);
+            Check check = new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?");
+            check.getData().put("error", ExceptionUtils.getMessage(e));
+            state.getChecks().add(check);
         }
         return state;
     }
