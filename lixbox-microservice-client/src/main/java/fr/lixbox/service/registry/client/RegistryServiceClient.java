@@ -58,7 +58,6 @@ public class RegistryServiceClient implements RegistryService
     // ----------- Attribut(s) -----------   
     private static final long serialVersionUID = 1201703311337L;
     private static final Log LOG = LogFactory.getLog(RegistryServiceClient.class);
-    private static RegistryServiceClient instance = null;
     
     private static final String DISCOVER_PATH = "/discover";
     private static final String ENTRIES_PATH = "/entries";

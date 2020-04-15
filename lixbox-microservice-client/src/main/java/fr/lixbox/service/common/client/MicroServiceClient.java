@@ -79,13 +79,13 @@ public abstract class MicroServiceClient implements MicroService
     
     public void init(String serviceRegistryUri)
     {
-        serviceRegistry = RegistryServiceClient.getInstance(serviceRegistryUri);
+        serviceRegistry = new RegistryServiceClient(serviceRegistryUri);
         loadInfosService();
         LOG.debug(getService());
     }
     public void init()
     {
-        serviceRegistry = RegistryServiceClient.getInstance();
+        serviceRegistry = new RegistryServiceClient();
         loadInfosService(); 
         LOG.debug(getService());
     }
@@ -111,7 +111,7 @@ public abstract class MicroServiceClient implements MicroService
      */
     public void addServiceRegistryUri(String uri)
     {
-        serviceRegistry = RegistryServiceClient.getInstance(uri); 
+        serviceRegistry = new RegistryServiceClient(uri); 
         LOG.debug(getService());
     }
     
