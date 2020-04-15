@@ -56,6 +56,10 @@ public class ServiceUtil implements Serializable
     
     public static ServiceState checkHealth(ServiceType type, String uri) 
     {
+        if (type==null)
+        {
+            type=ServiceType.TCP;
+        }
         ServiceState state;
         switch (type)
         {

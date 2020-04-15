@@ -44,6 +44,7 @@ import fr.lixbox.service.registry.RegistryService;
 import fr.lixbox.service.registry.cdi.RegistryConfigLoader;
 import fr.lixbox.service.registry.model.ServiceEntry;
 import fr.lixbox.service.registry.model.ServiceInstance;
+import fr.lixbox.service.registry.model.ServiceType;
 import fr.lixbox.service.registry.model.health.ServiceState;
 import fr.lixbox.service.registry.model.health.ServiceStatus;
 
@@ -96,6 +97,7 @@ public class RegistryServiceClient implements RegistryService
             if (!StringUtil.isEmpty(localUri))
             {
                 local = new ServiceEntry();
+                local.setType(ServiceType.MICRO_PROFILE);
                 local.setName(RegistryService.SERVICE_NAME);
                 local.setVersion(RegistryService.SERVICE_VERSION);
                 local.setPrimary(new ServiceInstance(localUri));
@@ -104,6 +106,7 @@ public class RegistryServiceClient implements RegistryService
             }      
                         
             ServiceEntry generic = new ServiceEntry();
+            generic.setType(ServiceType.MICRO_PROFILE);
             generic.setName(RegistryService.SERVICE_NAME);
             generic.setVersion(RegistryService.SERVICE_VERSION);
             generic.getInstances().addAll(
@@ -460,6 +463,7 @@ public class RegistryServiceClient implements RegistryService
             currentRegistry = null;
             init();
             ServiceEntry registry = cache.get(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION);
+            registry.getInstances().add(new ServiceInstance(uri));
             registry.setPrimary(registry.getInstanceByUri(uri));
             cache.put(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION, registry);
             jsonFileStore.write(cache);

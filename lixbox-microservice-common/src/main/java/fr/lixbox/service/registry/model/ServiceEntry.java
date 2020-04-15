@@ -102,6 +102,10 @@ public class ServiceEntry implements Serializable
     
     public ServiceType getType()
     {
+        if (type==null)
+        {
+            this.type=ServiceType.TCP;
+        }
         return type;
     }
     public void setType(ServiceType type)
