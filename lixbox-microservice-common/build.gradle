@@ -18,6 +18,16 @@ project(':lixbox-microservice-common'){
         testCompile group: 'org.jboss.resteasy', name: 'resteasy-client', version: '3.6.3.Final'
 	}
     
+    jar{
+       manifest {
+            attributes(
+                "Implementation-Title": project.name, 
+                "Implementation-Version": archiveVersion, 
+                "Implementation-Timestamp": new Date()
+            )
+        }
+    }
+    
     eclipse{
         wtp{
             facet {

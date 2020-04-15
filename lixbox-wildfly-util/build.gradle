@@ -32,6 +32,16 @@ project(':lixbox-wildfly-util'){
         testCompileOnly (group: 'jakarta.platform', name: 'jakarta.jakartaee-api', version: '8.0.0')
 	}
     
+    jar{
+       manifest {
+            attributes(
+                "Implementation-Title": project.name, 
+                "Implementation-Version": archiveVersion, 
+                "Implementation-Timestamp": new Date()
+            )
+        }
+    }
+    
     eclipse{
         wtp{
             facet {
