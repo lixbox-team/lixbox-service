@@ -10,8 +10,8 @@ project(':lixbox-microservice-client'){
         //divers
         compileOnly (group: 'jakarta.platform', name: 'jakarta.jakartaee-api', version: '8.0.0')
         
-        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: ' 3.6.3.Final'
-        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-client', version: '3.6.3.Final'
+        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: version_resteasy
+        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-client', version: version_resteasy
         
 
         // ================================ Test ================================

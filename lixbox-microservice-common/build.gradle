@@ -7,15 +7,15 @@ project(':lixbox-microservice-common'){
         //divers
         compileOnly (group: 'jakarta.platform', name: 'jakarta.jakartaee-api', version: '8.0.0')
         
-        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: ' 3.6.3.Final'
-        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-client', version: '3.6.3.Final'
+        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: version_resteasy
+        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-client', version: version_resteasy
         
 
         // ================================ Test ================================
 		testCompile 'junit:junit:4.12'
         testCompile 'com.github.tomakehurst:wiremock:2.19.0'
-        testCompile group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: ' 3.6.3.Final'
-        testCompile group: 'org.jboss.resteasy', name: 'resteasy-client', version: '3.6.3.Final'
+        testCompile group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: version_resteasy
+        testCompile group: 'org.jboss.resteasy', name: 'resteasy-client', version: version_resteasy
 	}
     
     jar{

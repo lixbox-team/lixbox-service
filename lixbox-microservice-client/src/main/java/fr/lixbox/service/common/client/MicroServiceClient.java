@@ -18,13 +18,13 @@ package fr.lixbox.service.common.client;
 import java.net.URI;
 
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.resteasy.client.jaxrs.BasicAuthentication;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
 import fr.lixbox.common.exceptions.BusinessException;
@@ -123,7 +123,7 @@ public abstract class MicroServiceClient implements MicroService
         {
             if (this.currentService == null) 
             {
-                ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+                ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
                 clientBuilder = clientBuilder.connectionPoolSize(20);
                 clientBuilder.disableTrustManager();
                 this.currentService = clientBuilder.build().target(providerUri);
@@ -266,7 +266,7 @@ public abstract class MicroServiceClient implements MicroService
         {
             if (currentService==null)
             {
-                ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+                ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
                 clientBuilder = clientBuilder.connectionPoolSize(20);
                 clientBuilder.disableTrustManager();
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
@@ -292,7 +292,7 @@ public abstract class MicroServiceClient implements MicroService
         {
             if (currentSecureService==null)
             {
-                ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+                ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
                 clientBuilder = clientBuilder.connectionPoolSize(20);
                 clientBuilder.disableTrustManager();
                 String uri =  getServiceURI();
