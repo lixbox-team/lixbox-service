@@ -73,36 +73,13 @@ public class RegistryServiceClient implements RegistryService
         
 
     // ----------- Methode(s) -----------
-    private RegistryServiceClient()
+    public RegistryServiceClient()
     {
         init();
     }
-    private RegistryServiceClient(String uri)
+    public RegistryServiceClient(String uri)
     {
         addRegistryServiceUri(uri);
-    }
-    
-     
-
-    public static RegistryServiceClient getInstance()
-    {
-        if (instance == null || StringUtil.isEmpty(instance.getCurrentRegistryServiceUri()))
-        {
-            instance = new RegistryServiceClient();
-        }   
-        return instance;
-    }
-    public static RegistryServiceClient getInstance(String RegistryServiceUri)
-    {
-        if (instance == null || StringUtil.isEmpty(instance.getCurrentRegistryServiceUri()))
-        {
-            instance = new RegistryServiceClient(RegistryServiceUri);
-        }   
-        return instance;
-    }
-    public static void clearInstance()
-    {
-        instance = null;
     }
 
     
