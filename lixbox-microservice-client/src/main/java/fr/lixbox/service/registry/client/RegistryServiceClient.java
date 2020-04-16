@@ -181,18 +181,21 @@ public class RegistryServiceClient implements RegistryService
      * Cette methode ajoute une URI à un service. 
      * @param name
      * @param version
+     * @param type
      * @param uri
      * 
      * @return true si le registre a bien été mis à jour.
      */
     @Override
-    public boolean registerService(String name, String version, String uri)
+    public boolean registerService(String name, String version, ServiceType type, String uri)
     {
         boolean result = false;        
         WebTarget registryService = getRegistryService();
         if (registryService!=null)
         {
-            Response response = getRegistryService().path("/register").path(name).path(version).queryParam("uri", uri).request().get();
+            Response response = getRegistryService().path("/register").path(name).path(version)
+                .queryParam("uri", uri).queryParam("type", type)
+                .request().get();
             result = response.readEntity(Boolean.class);
             if (result)
             {
@@ -484,7 +487,7 @@ public class RegistryServiceClient implements RegistryService
      */
     private WebTarget getRegistryService()
     {   
-        if(currentRegistry==null || ServiceStatus.DOWN.equals(ServiceUtil.checkHealthHttp(currentRegistry.getUri().toString()).getStatus()))
+        if(currentRegistry==null || ServiceStatus.DOWN.equals(ServiceUtil.checkHealthMicroProfileHealth(currentRegistry.getUri().toString()).getStatus()))
         {
             ClientBuilder cliBuilder = ClientBuilder.newBuilder();
             ((ResteasyClientBuilder) cliBuilder).connectionPoolSize(20);
@@ -533,14 +536,16 @@ public class RegistryServiceClient implements RegistryService
             {
                 uriFound = serviceEntry.getPrimary().getUri();
             }
-            
-            for (ServiceInstance servInstance : serviceEntry.getInstances())
+            else 
             {
-                if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), servInstance.getUri()).getStatus()))
+                for (ServiceInstance servInstance : serviceEntry.getInstances())
                 {
-                    uriFound = servInstance.getUri();
-                    serviceEntry.setPrimary(servInstance);
-                    storeServiceEntry(serviceEntry);
+                    if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), servInstance.getUri()).getStatus()))
+                    {
+                        uriFound = servInstance.getUri();
+                        serviceEntry.setPrimary(servInstance);
+                        storeServiceEntry(serviceEntry);
+                    }
                 }
             }
         }
