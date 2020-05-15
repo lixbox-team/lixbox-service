@@ -1,0 +1,41 @@
+project(':lixbox-undertow'){
+	dependencies {
+        //lixbox
+        
+        //divers
+        compileOnly (group: 'io.undertow', name: 'undertow-core', version: '2.1.0.Final')
+        compileOnly (group: 'io.undertow', name: 'undertow-servlet', version: '2.1.0.Final')
+        
+
+        // ================================ Test ================================
+		testCompile 'junit:junit:4.12'
+	}
+    
+    jar{
+       manifest {
+            attributes(
+                "Implementation-Title": project.name, 
+                "Implementation-Version": archiveVersion, 
+                "Implementation-Timestamp": new Date()
+            )
+        }
+    }
+    
+    eclipse{
+        wtp{
+            facet {
+                facet name: 'jst.cdi', version: '2.0'
+                facet name: 'jst.utility', version: '1.0'
+            }
+        }
+    }
+	
+	sonarqube {
+		properties {
+           property "sonar.projectKey", "${config.desc_project.artefact.group}.${rootProject.name}:${project.name}"
+           property "sonar.projectName", "${project.name}"
+		   property "sonar.sources","src/main"
+		   property "sonar.tests","src/test"
+        }
+	}	
+}
