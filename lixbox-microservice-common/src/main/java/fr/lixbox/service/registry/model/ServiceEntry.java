@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.lixbox.service.common.model.Instance;
 import fr.lixbox.service.registry.model.health.ServiceStatus;
 
 /**
@@ -53,8 +54,8 @@ public class ServiceEntry implements Serializable
     private String version;
     private String endpointUri;
     private ServiceType type;
-    private List<ServiceInstance> instances;
-    private ServiceInstance primary;
+    private List<Instance> instances;
+    private Instance primary;
     
         
 
@@ -94,7 +95,7 @@ public class ServiceEntry implements Serializable
     
     public ServiceStatus getStatus()
     {
-        Optional<ServiceInstance> found = getInstances().stream().filter(x->x.isReady()).findFirst();
+        Optional<Instance> found = getInstances().stream().filter(x->x.isReady()).findFirst();
         return found.isPresent()?ServiceStatus.UP:ServiceStatus.DOWN;                
     }
     
@@ -115,7 +116,7 @@ public class ServiceEntry implements Serializable
     
     
     
-    public List<ServiceInstance> getInstances()
+    public List<Instance> getInstances()
     {
         if (instances == null)
         {
@@ -123,18 +124,18 @@ public class ServiceEntry implements Serializable
         }
         return instances;
     }
-    public void setInstances(List<ServiceInstance> instances)
+    public void setInstances(List<Instance> instances)
     {
         this.instances = instances;
     }
     
     
     
-    public ServiceInstance getPrimary()
+    public Instance getPrimary()
     {
         return primary;
     }
-    public void setPrimary(ServiceInstance primary)
+    public void setPrimary(Instance primary)
     {
         this.primary = primary;
     }
@@ -144,7 +145,7 @@ public class ServiceEntry implements Serializable
     public boolean containsInstanceUri(String uri) 
     {
         boolean result = false;
-        for (ServiceInstance instance : getInstances())
+        for (Instance instance : getInstances())
         {
             if (instance.getUri().equals(uri))
             {
@@ -157,10 +158,10 @@ public class ServiceEntry implements Serializable
     
     
     @JsonIgnore
-    public ServiceInstance getInstanceByUri(String uri) 
+    public Instance getInstanceByUri(String uri) 
     {
-        ServiceInstance result = null;
-        for (ServiceInstance instance : getInstances())
+        Instance result = null;
+        for (Instance instance : getInstances())
         {
             if (instance.getUri().equals(uri))
             {

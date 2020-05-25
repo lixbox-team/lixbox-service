@@ -39,11 +39,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fr.lixbox.common.exceptions.ProcessusException;
 import fr.lixbox.common.util.StringUtil;
 import fr.lixbox.io.json.JsonFileStore;
+import fr.lixbox.service.common.model.Instance;
 import fr.lixbox.service.common.util.ServiceUtil;
 import fr.lixbox.service.registry.RegistryService;
 import fr.lixbox.service.registry.cdi.RegistryConfigLoader;
 import fr.lixbox.service.registry.model.ServiceEntry;
-import fr.lixbox.service.registry.model.ServiceInstance;
 import fr.lixbox.service.registry.model.ServiceType;
 import fr.lixbox.service.registry.model.health.ServiceState;
 import fr.lixbox.service.registry.model.health.ServiceStatus;
@@ -100,7 +100,7 @@ public class RegistryServiceClient implements RegistryService
                 local.setType(ServiceType.MICRO_PROFILE);
                 local.setName(RegistryService.SERVICE_NAME);
                 local.setVersion(RegistryService.SERVICE_VERSION);
-                local.setPrimary(new ServiceInstance(localUri));
+                local.setPrimary(new Instance(localUri));
                 storeServiceEntry(local);
                 return;
             }      
@@ -111,8 +111,8 @@ public class RegistryServiceClient implements RegistryService
             generic.setVersion(RegistryService.SERVICE_VERSION);
             generic.getInstances().addAll(
                     Arrays.asList(
-                        new ServiceInstance("http://localhost:9876/api/"+RegistryService.SERVICE_NAME+"/1.0"), 
-                        new ServiceInstance("http://localhost:8080/registry/api/1.0")));   
+                        new Instance("http://localhost:9876/api/"+RegistryService.SERVICE_NAME+"/1.0"), 
+                        new Instance("http://localhost:8080/registry/api/1.0")));   
             storeServiceEntry(generic);
         }   
     }
@@ -466,7 +466,7 @@ public class RegistryServiceClient implements RegistryService
             currentRegistry = null;
             init();
             ServiceEntry registry = cache.get(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION);
-            registry.getInstances().add(new ServiceInstance(uri));
+            registry.getInstances().add(new Instance(uri));
             registry.setPrimary(registry.getInstanceByUri(uri));
             cache.put(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION, registry);
             jsonFileStore.write(cache);
@@ -538,7 +538,7 @@ public class RegistryServiceClient implements RegistryService
             }
             else 
             {
-                for (ServiceInstance servInstance : serviceEntry.getInstances())
+                for (Instance servInstance : serviceEntry.getInstances())
                 {
                     if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), servInstance.getUri()).getStatus()))
                     {

@@ -31,11 +31,11 @@ import fr.lixbox.common.exceptions.BusinessException;
 import fr.lixbox.common.exceptions.ProcessusException;
 import fr.lixbox.common.util.StringUtil;
 import fr.lixbox.service.common.MicroService;
+import fr.lixbox.service.common.model.Instance;
 import fr.lixbox.service.common.util.ServiceUtil;
 import fr.lixbox.service.registry.RegistryService;
 import fr.lixbox.service.registry.client.RegistryServiceClient;
 import fr.lixbox.service.registry.model.ServiceEntry;
-import fr.lixbox.service.registry.model.ServiceInstance;
 import fr.lixbox.service.registry.model.health.ServiceState;
 import fr.lixbox.service.registry.model.health.ServiceStatus;
 
@@ -239,7 +239,7 @@ public abstract class MicroServiceClient implements MicroService
         {
             serviceName = serviceEntry.getName();
             serviceVersion = serviceEntry.getVersion();
-            for (ServiceInstance instance : serviceEntry.getInstances())
+            for (Instance instance : serviceEntry.getInstances())
             {
                 if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance.getUri()).getStatus()))
                 {   

@@ -13,7 +13,7 @@
  *   @AUTHOR Ludovic TERRAL
  *
  ******************************************************************************/
-package fr.lixbox.service.registry.model;
+package fr.lixbox.service.common.model;
 
 import java.io.Serializable;
 
@@ -73,11 +73,11 @@ import fr.lixbox.service.registry.model.health.ServiceState;
  * @author ludovic.terral
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ServiceInstance implements Serializable
+public class Instance implements Serializable
 {
     // ----------- Attribut(s) -----------   
     private static final long serialVersionUID = -1981609597130085609L;
-    private static final Log LOG = LogFactory.getLog(ServiceInstance.class);
+    private static final Log LOG = LogFactory.getLog(Instance.class);
     
     private String uri;
     private boolean isLive;
@@ -88,11 +88,11 @@ public class ServiceInstance implements Serializable
         
 
     // ----------- Methode(s) -----------
-    public ServiceInstance() 
+    public Instance() 
     {
         //base constructor
     }
-    public ServiceInstance(String uri) 
+    public Instance(String uri) 
     {
         this.uri=uri;
     }
