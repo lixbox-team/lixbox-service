@@ -7,15 +7,17 @@ project(':lixbox-jaxrs'){
         //divers
         compileOnly (group: 'jakarta.platform', name: 'jakarta.jakartaee-api', version: '8.0.0')
         
-        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: version_resteasy
-        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-client', version: version_resteasy
+        //quarkus
+        compileOnly group: 'io.quarkus', name: 'quarkus-resteasy', version: version_quarkus
+        compileOnly group: 'io.quarkus', name: 'quarkus-resteasy-jackson', version: version_quarkus
+        compileOnly group: 'io.quarkus', name: 'quarkus-rest-client', version: version_quarkus
         
 
         // ================================ Test ================================
 		testCompile 'junit:junit:4.12'
-        testCompile 'com.github.tomakehurst:wiremock:2.19.0'
-        testCompile group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: version_resteasy
-        testCompile group: 'org.jboss.resteasy', name: 'resteasy-client', version: version_resteasy
+        testCompile group: 'io.quarkus', name: 'quarkus-resteasy', version: version_quarkus
+        testCompile group: 'io.quarkus', name: 'quarkus-resteasy-jackson', version: version_quarkus
+        testCompile group: 'io.quarkus', name: 'quarkus-rest-client', version: version_quarkus
 	}
     
     jar{
