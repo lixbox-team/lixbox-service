@@ -115,10 +115,11 @@ public abstract class MicroServiceClient implements MicroService
         LOG.debug(getService());
     }
     
-        
     
-    public void setServiceUri(String providerUri)
-    {
+    
+    public void setServiceUri(String uri)
+    {   
+        //surcharge service non connecte
         try 
         {
             if (this.currentService == null) 
@@ -126,14 +127,39 @@ public abstract class MicroServiceClient implements MicroService
                 ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
                 clientBuilder = clientBuilder.connectionPoolSize(20);
                 clientBuilder.disableTrustManager();
-                this.currentService = clientBuilder.build().target(providerUri);
+                this.currentService = clientBuilder.build().target(uri);
             }
         } 
         catch (Exception e) 
         {
             LOG.fatal(e);
-        }        
-    }
+        }    
+
+        //surcharge service connecte
+        try
+        {
+            if(this.currentSecureService==null)        
+            {   
+                ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
+                clientBuilder = clientBuilder.connectionPoolSize(20);
+                clientBuilder.disableTrustManager();
+                if (!StringUtil.isEmpty(uri) && basicAuth!=null)
+                {
+                    currentSecureService = clientBuilder.build().target(URI.create(uri));
+                    currentSecureService.register(basicAuth);
+                }
+                if (!StringUtil.isEmpty(uri) && tokenAuth!=null)
+                {
+                    currentSecureService = clientBuilder.build().target(URI.create(uri));
+                    currentSecureService.register(tokenAuth);
+                }  
+            }
+        }
+        catch (Exception e)
+        {
+            LOG.fatal(e);
+        }       
+    } 
     
 
 
