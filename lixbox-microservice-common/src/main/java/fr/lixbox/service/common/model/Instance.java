@@ -84,6 +84,9 @@ public class Instance implements Serializable
     private boolean isReady;
     private ServiceState liveState;
     private ServiceState readyState;
+    private String username;
+    private String credential;
+    private String token;
     
         
 
@@ -131,9 +134,42 @@ public class Instance implements Serializable
     {
         this.isReady = isReady;
     }
+    
+    
 
-
-
+    public String getUsername()
+    {
+        return username;
+    }
+    public void setUsername(String username)
+    {
+        this.username = username;
+    }
+    
+    
+    
+    public String getCredential()
+    {
+        return credential;
+    }
+    public void setCredential(String credential)
+    {
+        this.credential = credential;
+    }
+    
+    
+    
+    public String getToken()
+    {
+        return token;
+    }
+    public void setToken(String token)
+    {
+        this.token = token;
+    }
+    
+    
+    
     public ServiceState getLiveState()
     {
         return liveState;
