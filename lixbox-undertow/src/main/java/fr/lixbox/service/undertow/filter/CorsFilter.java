@@ -3,14 +3,22 @@
  *                           FRAMEWORK Lixbox
  *                          ==================
  *      
- *   Copyrigth - LIXTEC - Tous droits reserves.
+ * This file is part of lixbox-service.
+ *
+ *    lixbox-supervision is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    lixbox-supervision is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *    along with lixbox-service.  If not, see <https://www.gnu.org/licenses/>
  *   
- *   Le contenu de ce fichier est la propriete de la societe Lixtec.
- *   
- *   Toute utilisation de ce fichier et des informations, sous n'importe quelle
- *   forme necessite un accord ecrit explicite des auteurs
- *   
- *   @AUTHOR Ludovic TERRAL
+ *   @AUTHOR Lixbox-team
  *
  ******************************************************************************/
 package fr.lixbox.service.undertow.filter;
@@ -53,13 +61,6 @@ public class CorsFilter implements Filter
         response.setHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
         response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, "access-control-allow-origin, authorization , accept, content-type, origin");
         response.setHeader(ACCESS_CONTROL_REQUEST_METHOD, "GET,POST,OPTIONS,HEAD");
-        if (!"OPTIONS".equalsIgnoreCase(request.getMethod())) 
-        {
-            chain.doFilter(servletRequest, servletResponse);
-        }
-        else 
-        {
-            response.flushBuffer();
-        }
+        chain.doFilter(servletRequest, servletResponse);
     }
 }
