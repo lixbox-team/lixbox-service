@@ -7,7 +7,7 @@ Ce dépôt offre des fonctions supports pour les projets microservices:
 
 Il offre aussi un filtre pour contourner les fonctions CORS de HTTP
 
-Le site du service est [ici](https://project-site.service.lixtec.fr/lixbox-service)  
+Le site du service est [ici](https://project-site.service.dev.lan/lixbox-service)  
 
 
 ## Dépendences
