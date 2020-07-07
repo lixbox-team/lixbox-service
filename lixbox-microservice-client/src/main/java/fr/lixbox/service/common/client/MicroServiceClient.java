@@ -3,14 +3,14 @@
  *                           FRAMEWORK Lixbox
  *                          ==================
  *      
- * This file is part of lixbox-service.
+ *    This file is part of lixbox-service.
  *
- *    lixbox-supervision is free software: you can redistribute it and/or modify
+ *    lixbox-service is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation, either version 3 of the License, or
  *    (at your option) any later version.
  *
- *    lixbox-supervision is distributed in the hope that it will be useful,
+ *    lixbox-service is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
@@ -70,6 +70,9 @@ public abstract class MicroServiceClient implements MicroService
     protected ServiceEntry serviceEntry;
     protected String serviceName = "micro-service";
     protected String serviceVersion = "0.1";
+    protected String proxyHost;
+    protected Integer proxyPort;
+    protected String staticUri = null;
     
     
     
@@ -100,15 +103,25 @@ public abstract class MicroServiceClient implements MicroService
     
     
     
+    public void setProxy(String proxyHost, int proxyPort)
+    {
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+        clearClients();
+    }
+    
+    
     public void setCredentials(String user, String password)
     {
         basicAuth = new BasicAuthentication(user, password);
+        clearClients();
     }
     
     
     public void setToken(String type, String token)
     {
         tokenAuth = new TokenAuthentication(type, token);
+        clearClients();
     }
     
         
@@ -127,47 +140,17 @@ public abstract class MicroServiceClient implements MicroService
     
     public void setServiceUri(String uri)
     {   
-        //surcharge service non connecte
-        try 
-        {
-            if (this.currentService == null) 
-            {
-                ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-                clientBuilder = clientBuilder.connectionPoolSize(20);
-                clientBuilder.disableTrustManager();
-                this.currentService = clientBuilder.build().target(uri);
-            }
-        } 
-        catch (Exception e) 
-        {
-            LOG.fatal(e);
-        }    
-
-        //surcharge service connecte
-        try
-        {
-            if(this.currentSecureService==null)        
-            {   
-                ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
-                clientBuilder = clientBuilder.connectionPoolSize(20);
-                clientBuilder.disableTrustManager();
-                if (!StringUtil.isEmpty(uri) && basicAuth!=null)
-                {
-                    currentSecureService = clientBuilder.build().target(URI.create(uri));
-                    currentSecureService.register(basicAuth);
-                }
-                if (!StringUtil.isEmpty(uri) && tokenAuth!=null)
-                {
-                    currentSecureService = clientBuilder.build().target(URI.create(uri));
-                    currentSecureService.register(tokenAuth);
-                }  
-            }
-        }
-        catch (Exception e)
-        {
-            LOG.fatal(e);
-        }       
+        this.staticUri = uri;
+        clearClients();
     } 
+    
+    
+    
+    public void clear()
+    {
+        this.currentSecureService = null;
+        this.currentService = null;
+    }
     
 
 
@@ -266,19 +249,24 @@ public abstract class MicroServiceClient implements MicroService
      */
     protected String getServiceURI()
     {
-        String serviceName="UNKNOW";
-        String serviceVersion="UNKNOW";
         String uriFound="";
-        if (serviceEntry!=null)
+        if (StringUtil.isNotEmpty(this.staticUri))
         {
-            serviceName = serviceEntry.getName();
-            serviceVersion = serviceEntry.getVersion();
-            for (Instance instance : serviceEntry.getInstances())
+            uriFound = this.staticUri;
+        }
+        else
+        {
+            if (serviceEntry!=null)
             {
-                if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance.getUri()).getStatus()))
-                {   
-                    uriFound = instance.getUri();
-                    break;
+                serviceName = serviceEntry.getName();
+                serviceVersion = serviceEntry.getVersion();
+                for (Instance instance : serviceEntry.getInstances())
+                {
+                    if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance.getUri()).getStatus()))
+                    {   
+                        uriFound = instance.getUri();
+                        break;
+                    }
                 }
             }
         }
@@ -303,6 +291,10 @@ public abstract class MicroServiceClient implements MicroService
                 ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
                 clientBuilder = clientBuilder.connectionPoolSize(20);
                 clientBuilder.disableTrustManager();
+                if (StringUtil.isNotEmpty(proxyHost))
+                {
+                    clientBuilder.defaultProxy(proxyHost,proxyPort);
+                }
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
                 String uri = getServiceURI();
                 if (!StringUtil.isEmpty(uri))
@@ -329,6 +321,10 @@ public abstract class MicroServiceClient implements MicroService
                 ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
                 clientBuilder = clientBuilder.connectionPoolSize(20);
                 clientBuilder.disableTrustManager();
+                if (StringUtil.isNotEmpty(proxyHost))
+                {
+                    clientBuilder.defaultProxy(proxyHost,proxyPort);
+                }
                 String uri =  getServiceURI();
                 if (!StringUtil.isEmpty(uri) && basicAuth!=null)
                 {
