@@ -146,7 +146,7 @@ public abstract class MicroServiceClient implements MicroService
     
     
     
-    public void clear()
+    public void clearClients()
     {
         this.currentSecureService = null;
         this.currentService = null;
