@@ -70,6 +70,8 @@ public abstract class MicroServiceClient implements MicroService
     protected ServiceEntry serviceEntry;
     protected String serviceName = "micro-service";
     protected String serviceVersion = "0.1";
+    protected String proxyHost;
+    protected Integer proxyPort;
     
     
     
@@ -98,6 +100,13 @@ public abstract class MicroServiceClient implements MicroService
         LOG.debug(getService());
     }
     
+    
+    
+    public void setProxy(String proxyHost, int proxyPort)
+    {
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+    }
     
     
     public void setCredentials(String user, String password)
@@ -303,6 +312,10 @@ public abstract class MicroServiceClient implements MicroService
                 ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
                 clientBuilder = clientBuilder.connectionPoolSize(20);
                 clientBuilder.disableTrustManager();
+                if (StringUtil.isNotEmpty(proxyHost))
+                {
+                    clientBuilder.defaultProxy(proxyHost,proxyPort);
+                }
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
                 String uri = getServiceURI();
                 if (!StringUtil.isEmpty(uri))
@@ -329,6 +342,10 @@ public abstract class MicroServiceClient implements MicroService
                 ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
                 clientBuilder = clientBuilder.connectionPoolSize(20);
                 clientBuilder.disableTrustManager();
+                if (StringUtil.isNotEmpty(proxyHost))
+                {
+                    clientBuilder.defaultProxy(proxyHost,proxyPort);
+                }
                 String uri =  getServiceURI();
                 if (!StringUtil.isEmpty(uri) && basicAuth!=null)
                 {
