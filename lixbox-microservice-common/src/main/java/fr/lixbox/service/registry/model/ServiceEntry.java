@@ -141,6 +141,17 @@ public class ServiceEntry implements Serializable
     
     public Instance getPrimary()
     {
+        if (primary == null && !getInstances().isEmpty())
+        {
+            for (Instance instance : getInstances())
+            {
+                if (ServiceStatus.UP.equals(instance.getLiveState().getStatus()))
+                {
+                    this.primary = instance;
+                    break;
+                }
+            }
+        }
         return primary;
     }
     public void setPrimary(Instance primary)
