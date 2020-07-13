@@ -326,15 +326,14 @@ public abstract class MicroServiceClient implements MicroService
                     clientBuilder.defaultProxy(proxyHost,proxyPort);
                 }
                 String uri =  getServiceURI();
+                currentSecureService = clientBuilder.build().target(URI.create(uri));
                 if (!StringUtil.isEmpty(uri) && basicAuth!=null)
                 {
-                    currentSecureService = clientBuilder.build().target(URI.create(uri));
                     currentSecureService.register(basicAuth);
                     launchSyncCache();                    
                 }
                 if (!StringUtil.isEmpty(uri) && tokenAuth!=null)
                 {
-                    currentSecureService = clientBuilder.build().target(URI.create(uri));
                     currentSecureService.register(tokenAuth);
                     launchSyncCache();                    
                 }
