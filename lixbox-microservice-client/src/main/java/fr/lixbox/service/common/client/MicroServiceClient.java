@@ -262,7 +262,7 @@ public abstract class MicroServiceClient implements MicroService
                 serviceVersion = serviceEntry.getVersion();
                 for (Instance instance : serviceEntry.getInstances())
                 {
-                    if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance.getUri()).getStatus()))
+                    if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance).getStatus()))
                     {   
                         uriFound = instance.getUri();
                         break;
