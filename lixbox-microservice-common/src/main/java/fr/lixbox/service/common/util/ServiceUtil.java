@@ -38,6 +38,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import fr.lixbox.common.exceptions.BusinessException;
 import fr.lixbox.common.exceptions.ProcessusException;
+import fr.lixbox.common.util.StringUtil;
+import fr.lixbox.service.common.model.Instance;
 import fr.lixbox.service.registry.model.ServiceType;
 import fr.lixbox.service.registry.model.health.Check;
 import fr.lixbox.service.registry.model.health.ServiceState;
@@ -71,6 +73,9 @@ public class ServiceUtil implements Serializable
         ServiceState state;
         switch (type)
         {
+            case MANUAL:
+                state = checkHealthManual(uri);
+                break;
             case HTTP:
                 state = checkHealthHttp(uri);
                 break;
@@ -85,7 +90,57 @@ public class ServiceUtil implements Serializable
         return state;
     }
 
+    
+    
+    public static ServiceState checkHealth(ServiceType type, Instance instance) 
+    {
+        if (type==null)
+        {
+            type=ServiceType.TCP;
+        }
+        ServiceState state;
+        switch (type)
+        {
+            case MANUAL:
+                state = checkHealthManual(instance.getManualCheckUri());
+                break;
+            case HTTP:
+                state = checkHealthHttp(instance.getUri());
+                break;
+            case MICRO_PROFILE:
+                state = checkHealthMicroProfileHealth(instance.getUri());
+                break;
+            case TCP:
+            default:
+                state = checkHealthTcp(instance.getUri());
+                break;
+        }
+        return state;
+    }
 
+
+    public static ServiceState checkHealthManual(String uri)
+    {   
+        ServiceState state = new ServiceState();
+        if (StringUtil.isEmpty(uri))
+        {
+            state.setStatus(ServiceStatus.UP);
+        }
+        else
+        {
+            if (uri.startsWith("tcp"))
+            {
+                state = checkHealthTcp(uri);
+            }
+            if (uri.startsWith("http"))
+            {
+                state = checkHealthHttp(uri);
+            }
+        }
+        return state;
+    }
+
+    
 
     public static ServiceState checkHealthMicroProfileHealth(String uri)
     {
