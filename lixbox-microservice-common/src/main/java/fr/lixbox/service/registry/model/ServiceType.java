@@ -34,5 +34,5 @@ package fr.lixbox.service.registry.model;
  */
 public enum ServiceType
 {
-    TCP, HTTP, MICRO_PROFILE;
+    MANUAL, TCP, HTTP, MICRO_PROFILE;
 }

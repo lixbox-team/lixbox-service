@@ -88,13 +88,14 @@ public class Instance implements Serializable
     private static final Log LOG = LogFactory.getLog(Instance.class);
     
     private String uri;
-    private boolean isLive;
-    private boolean isReady;
+    private boolean isLive=true;
+    private boolean isReady=true;
     private ServiceState liveState;
     private ServiceState readyState;
     private String username;
     private String credential;
     private String token;
+    private String manualCheckUri;
     
         
 
@@ -120,13 +121,21 @@ public class Instance implements Serializable
 
 
 
+    public String getManualCheckUri()
+    {
+        return manualCheckUri;
+    }
+    public void setManualCheckUri(String manualCheckUri)
+    {
+        this.manualCheckUri = manualCheckUri;
+    }
+
+    
+    
     public boolean isLive()
     {
         return isLive;
     }
-
-
-
     public void setLive(boolean isLive)
     {
         this.isLive = isLive;
@@ -203,7 +212,7 @@ public class Instance implements Serializable
     @Override
     public String toString() 
     {
-        String result = "Content error";
+        String result = "{}";
         ObjectMapper mapper = new ObjectMapper();
         try {
             result = mapper.writeValueAsString(this);

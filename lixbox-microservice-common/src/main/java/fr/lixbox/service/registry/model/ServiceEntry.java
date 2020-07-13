@@ -145,7 +145,7 @@ public class ServiceEntry implements Serializable
         {
             for (Instance instance : getInstances())
             {
-                if (ServiceStatus.UP.equals(instance.getLiveState().getStatus()))
+                if (instance.isLive())
                 {
                     this.primary = instance;
                     break;
@@ -195,7 +195,7 @@ public class ServiceEntry implements Serializable
     @Override
     public String toString() 
     {
-        String result = "Content error";
+        String result = "{}";
         ObjectMapper mapper = new ObjectMapper();
         try {
             result = mapper.writeValueAsString(this);
