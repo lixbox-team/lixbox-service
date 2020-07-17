@@ -24,6 +24,7 @@
 package fr.lixbox.service.common.util;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.net.Socket;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
@@ -36,9 +37,12 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import fr.lixbox.common.exceptions.BusinessException;
 import fr.lixbox.common.exceptions.ProcessusException;
 import fr.lixbox.common.util.StringUtil;
+import fr.lixbox.io.json.JsonUtil;
 import fr.lixbox.service.common.model.Instance;
 import fr.lixbox.service.registry.model.ServiceType;
 import fr.lixbox.service.registry.model.health.Check;
@@ -236,7 +240,12 @@ public class ServiceUtil implements Serializable
         {
             case 200:
             case 201:
-                result = response.readEntity(type);
+                result = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<T>()
+                {
+                    public Type getType() {
+                        return  type.getClass();
+                    }
+                });
                 break;
             case 404:
                 throw new BusinessException(response.readEntity(String.class));
