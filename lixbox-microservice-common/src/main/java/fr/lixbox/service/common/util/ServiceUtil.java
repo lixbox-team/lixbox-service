@@ -242,6 +242,7 @@ public class ServiceUtil implements Serializable
             case 201:
                 result = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<T>()
                 {
+                    @Override
                     public Type getType() {
                         return  type.getClass();
                     }
