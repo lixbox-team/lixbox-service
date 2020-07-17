@@ -244,7 +244,7 @@ public class ServiceUtil implements Serializable
                 {
                     @Override
                     public Type getType() {
-                        return  type.getClass();
+                        return  type.getRawType();
                     }
                 });
                 break;
