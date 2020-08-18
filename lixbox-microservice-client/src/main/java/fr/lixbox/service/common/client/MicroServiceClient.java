@@ -35,6 +35,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import fr.lixbox.common.exceptions.BusinessException;
 import fr.lixbox.common.exceptions.ProcessusException;
 import fr.lixbox.common.util.StringUtil;
@@ -344,6 +346,24 @@ public abstract class MicroServiceClient implements MicroService
             LOG.fatal(e);
         }
         return currentSecureService;
+    }
+    
+
+    
+    protected <T> T parseResponse(Response response, TypeReference<T> type) throws BusinessException
+    {
+        T result;
+        try
+        {
+            result = ServiceUtil.parseResponse(response, type);
+        }
+        catch(ProcessingException pe)
+        {
+            currentSecureService = null;
+            currentService = null;
+            throw pe;
+        }
+        return result;
     }
     
 

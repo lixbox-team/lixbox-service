@@ -244,9 +244,41 @@ public class ServiceUtil implements Serializable
                 {
                     @Override
                     public Type getType() {
-                        return  type.getRawType();
+                        return  type.getType();
                     }
                 });
+                break;
+            case 404:
+                throw new BusinessException(response.readEntity(String.class));
+            default:
+                throw new ProcessusException(response.readEntity(String.class));
+        }
+        return result;
+    }
+    
+    
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T parseResponse(Response response, TypeReference<T> type) throws BusinessException
+    {
+        T result;
+        switch(response.getStatus())
+        {
+            case 200:
+            case 201:
+                if (type.getType().getTypeName().contains("String"))
+                {
+                    result = (T) response.readEntity(String.class);
+                }
+                else {
+                    result = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<T>()
+                    {
+                        @Override
+                        public Type getType() {
+                            return  type.getType();
+                        }
+                    });
+                }
                 break;
             case 404:
                 throw new BusinessException(response.readEntity(String.class));
