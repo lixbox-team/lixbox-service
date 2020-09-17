@@ -152,6 +152,7 @@ public abstract class MicroServiceClient implements MicroService
     {
         this.currentSecureService = null;
         this.currentService = null;
+        this.serviceEntry = null;
     }
     
 
@@ -327,6 +328,7 @@ public abstract class MicroServiceClient implements MicroService
                 {
                     clientBuilder.defaultProxy(proxyHost,proxyPort);
                 }
+                this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
                 String uri =  getServiceURI();
                 currentSecureService = clientBuilder.build().target(URI.create(uri));
                 if (!StringUtil.isEmpty(uri) && basicAuth!=null)
@@ -361,6 +363,7 @@ public abstract class MicroServiceClient implements MicroService
         {
             currentSecureService = null;
             currentService = null;
+            serviceEntry = null;
             throw pe;
         }
         return result;
@@ -379,6 +382,7 @@ public abstract class MicroServiceClient implements MicroService
         {
             currentSecureService = null;
             currentService = null;
+            serviceEntry = null;
             throw pe;
         }
         return result;
