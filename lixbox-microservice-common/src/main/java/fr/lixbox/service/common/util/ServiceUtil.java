@@ -248,6 +248,10 @@ public class ServiceUtil implements Serializable
                     }
                 });
                 break;
+            case 401:
+                throw new ProcessusException("401 - Nécéssite une authentification.");
+            case 403:
+                throw new ProcessusException("403 - Vous n'êtes pas autorisé à utiliser cette ressources.");
             case 404:
                 throw new BusinessException(response.readEntity(String.class));
             default:
@@ -280,6 +284,10 @@ public class ServiceUtil implements Serializable
                     });
                 }
                 break;
+            case 401:
+                throw new ProcessusException("401 - Nécéssite une authentification.");
+            case 403:
+                throw new ProcessusException("403 - Vous n'êtes pas autorisé à utiliser cette ressources.");
             case 404:
                 throw new BusinessException(response.readEntity(String.class));
             default:
