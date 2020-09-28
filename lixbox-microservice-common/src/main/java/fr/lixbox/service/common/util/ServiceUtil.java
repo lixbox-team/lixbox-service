@@ -233,7 +233,7 @@ public class ServiceUtil implements Serializable
     
     
     
-    public static <T> T parseResponse(Response response, GenericType<T> type) throws BusinessException
+    public static <T> T parseReponse(Response response, Type type) throws BusinessException
     {
         T result;
         switch(response.getStatus())
@@ -244,14 +244,14 @@ public class ServiceUtil implements Serializable
                 {
                     @Override
                     public Type getType() {
-                        return  type.getType();
+                        return  type;
                     }
                 });
                 break;
             case 401:
-                throw new ProcessusException("401 - Nécéssite une authentification.");
+                throw new ProcessusException("401 - NECESSITE UNE AUTHENTIFICATION");
             case 403:
-                throw new ProcessusException("403 - Vous n'êtes pas autorisé à utiliser cette ressources.");
+                throw new ProcessusException("403 - VOUS N'ETES PAS AUTORISE A UTILISER CETTE RESSOURCE");
             case 404:
                 throw new BusinessException(response.readEntity(String.class));
             default:
@@ -262,37 +262,15 @@ public class ServiceUtil implements Serializable
     
     
     
-    @SuppressWarnings("unchecked")
+    public static <T> T parseResponse(Response response, GenericType<T> type) throws BusinessException
+    {
+        return parseReponse(response, type.getType());
+    }
+    
+    
+    
     public static <T> T parseResponse(Response response, TypeReference<T> type) throws BusinessException
     {
-        T result;
-        switch(response.getStatus())
-        {
-            case 200:
-            case 201:
-                if (type.getType().getTypeName().contains("String"))
-                {
-                    result = (T) response.readEntity(String.class);
-                }
-                else {
-                    result = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<T>()
-                    {
-                        @Override
-                        public Type getType() {
-                            return  type.getType();
-                        }
-                    });
-                }
-                break;
-            case 401:
-                throw new ProcessusException("401 - Nécéssite une authentification.");
-            case 403:
-                throw new ProcessusException("403 - Vous n'êtes pas autorisé à utiliser cette ressources.");
-            case 404:
-                throw new BusinessException(response.readEntity(String.class));
-            default:
-                throw new ProcessusException(response.readEntity(String.class));
-        }
-        return result;
+        return parseReponse(response, type.getType());
     }
 }
