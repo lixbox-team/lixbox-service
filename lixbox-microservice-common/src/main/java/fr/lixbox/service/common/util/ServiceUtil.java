@@ -123,23 +123,18 @@ public class ServiceUtil implements Serializable
     }
 
 
+    
     public static ServiceState checkHealthManual(String uri)
     {   
         ServiceState state = new ServiceState();
-        if (StringUtil.isEmpty(uri))
+        state.setStatus(ServiceStatus.UP);
+        if (StringUtil.isNotEmpty(uri) && (uri.startsWith("tcp") || uri.startsWith("remote")))
         {
-            state.setStatus(ServiceStatus.UP);
+            state = checkHealthTcp(uri);
         }
-        else
+        if (uri.startsWith("http"))
         {
-            if (uri.startsWith("tcp"))
-            {
-                state = checkHealthTcp(uri);
-            }
-            if (uri.startsWith("http"))
-            {
-                state = checkHealthHttp(uri);
-            }
+            state = checkHealthHttp(uri);
         }
         return state;
     }
@@ -207,7 +202,7 @@ public class ServiceUtil implements Serializable
 
     public static ServiceState checkHealthTcp(String uri)
     {
-        String hostName = uri.substring(6,uri.lastIndexOf(':'));
+        String hostName = uri.substring(uri.indexOf(':')+2,uri.lastIndexOf(':'));
         String port = uri.substring(uri.lastIndexOf(':')+1);
         
         
