@@ -202,7 +202,7 @@ public class ServiceUtil implements Serializable
 
     public static ServiceState checkHealthTcp(String uri)
     {
-        String hostName = uri.substring(uri.indexOf(':')+2,uri.lastIndexOf(':'));
+        String hostName = uri.substring(uri.indexOf(':')+3,uri.lastIndexOf(':'));
         String port = uri.substring(uri.lastIndexOf(':')+1);
         
         
