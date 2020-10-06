@@ -132,7 +132,7 @@ public class ServiceUtil implements Serializable
         {
             state = checkHealthTcp(uri);
         }
-        if (uri.startsWith("http"))
+        if (StringUtil.isNotEmpty(uri) && uri.startsWith("http"))
         {
             state = checkHealthHttp(uri);
         }
