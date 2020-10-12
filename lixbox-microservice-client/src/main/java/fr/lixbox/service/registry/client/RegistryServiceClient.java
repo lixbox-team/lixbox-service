@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLSession;
 import javax.ws.rs.ProcessingException;
@@ -201,7 +202,7 @@ public class RegistryServiceClient implements RegistryService
         WebTarget registryService = getRegistryService();
         if (registryService!=null)
         {
-            Response response = getRegistryService().path("/register").path(name).path(version)
+            Response response = registryService.path("/register").path(name).path(version)
                 .queryParam("uri", uri).queryParam("type", type)
                 .request().get();
             result = response.readEntity(Boolean.class);
@@ -232,7 +233,7 @@ public class RegistryServiceClient implements RegistryService
         WebTarget registryService = getRegistryService();
         if (registryService!=null)
         {
-            Response response = getRegistryService().path("/unregister").path(name).path(version).queryParam("uri", uri).request().delete();
+            Response response = registryService.path("/unregister").path(name).path(version).queryParam("uri", uri).request().delete();
             result = response.readEntity(Boolean.class);
             if (result)
             {
@@ -270,7 +271,7 @@ public class RegistryServiceClient implements RegistryService
         WebTarget registryService = getRegistryService();
         if (registryService != null)
         {
-            Response response = getRegistryService().path(DISCOVER_PATH).path(name).path(version).request().get();        
+            Response response = registryService.path(DISCOVER_PATH).path(name).path(version).request().get();        
             try
             {
                 result = response.readEntity(ServiceEntry.class);
@@ -309,7 +310,7 @@ public class RegistryServiceClient implements RegistryService
         WebTarget registryService = getRegistryService();
         if (registryService!=null)
         {
-            Response response = getRegistryService().path(DISCOVER_PATH).path(name).path(version).request().get();        
+            Response response = registryService.path(DISCOVER_PATH).path(name).path(version).request().get();        
             try 
             {
                 ServiceEntry tmp = response.readEntity(ServiceEntry.class);
@@ -352,7 +353,7 @@ public class RegistryServiceClient implements RegistryService
         WebTarget registryService = getRegistryService();
         if(registryService != null)
         {
-        	Response response = getRegistryService().path(ENTRIES_PATH).path(name).request().get();
+        	Response response = registryService.path(ENTRIES_PATH).path(name).request().get();
         	try 
         	{
                 result = response.readEntity( new GenericType<List<ServiceEntry>>(){});
@@ -398,7 +399,7 @@ public class RegistryServiceClient implements RegistryService
         WebTarget registryService = getRegistryService();
         if(registryService != null)
         {
-        	Response response = getRegistryService().path(ENTRIES_PATH).request().get();
+        	Response response = registryService.path(ENTRIES_PATH).request().get();
         	try 
         	{
                 result = response.readEntity( new GenericType<List<ServiceEntry>>(){});
@@ -498,7 +499,9 @@ public class RegistryServiceClient implements RegistryService
         if(currentRegistry==null || ServiceStatus.DOWN.equals(ServiceUtil.checkHealthMicroProfileHealth(currentRegistry.getUri().toString()).getStatus()))
         {
             ClientBuilder cliBuilder = ClientBuilder.newBuilder();
-            ((ResteasyClientBuilder) cliBuilder).connectionPoolSize(20);
+            ((ResteasyClientBuilder) cliBuilder).connectionPoolSize(3);
+            ((ResteasyClientBuilder) cliBuilder).connectionTTL(1, TimeUnit.SECONDS);
+            ((ResteasyClientBuilder) cliBuilder).connectionCheckoutTimeout(20, TimeUnit.MILLISECONDS);
             cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
             currentRegistry = cliBuilder.build().target(URI.create(getRegistryServiceURI()));
         }

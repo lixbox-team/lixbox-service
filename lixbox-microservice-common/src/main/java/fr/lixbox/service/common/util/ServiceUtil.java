@@ -31,11 +31,14 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLSession;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+//import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -66,6 +69,22 @@ public class ServiceUtil implements Serializable
         //classe utilitaire
     }
     
+    
+    
+    public static Client getPooledClient(String proxyHost, int proxyPort)
+    {
+        ResteasyClientBuilder cliBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
+        cliBuilder.connectionTTL(1, TimeUnit.MINUTES);
+        cliBuilder.connectionCheckoutTimeout(50, TimeUnit.MILLISECONDS);
+        cliBuilder.connectTimeout(2, TimeUnit.SECONDS);
+        cliBuilder.disableTrustManager();
+        if (StringUtil.isNotEmpty(proxyHost))
+        {
+            cliBuilder.defaultProxy(proxyHost,proxyPort);
+        }
+        return cliBuilder.build();
+    }
     
     
     public static ServiceState checkHealth(ServiceType type, String uri) 
@@ -144,11 +163,10 @@ public class ServiceUtil implements Serializable
     public static ServiceState checkHealthMicroProfileHealth(String uri)
     {
         ServiceState state;
+        Client client = getPooledClient("",0);
         try
         {
-            ClientBuilder cliBuilder = ClientBuilder.newBuilder();
-            cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
-            state = parseResponse(cliBuilder.build().target(URI.create(uri+"/health")).request().get(), new GenericType<ServiceState>(){});
+            state = parseResponse(client.target(URI.create(uri+"/health")).request().get(), new GenericType<ServiceState>(){});
         }
         catch (BusinessException e) 
         {
@@ -166,6 +184,7 @@ public class ServiceUtil implements Serializable
             check.getData().put("error", ExceptionUtils.getMessage(pe));
             state.getChecks().add(check);
         }
+        client.close();
         return state;
     }
 
@@ -174,13 +193,11 @@ public class ServiceUtil implements Serializable
     public static ServiceState checkHealthHttp(String uri)
     {
         ServiceState state = new ServiceState();
-        try
+        Client client = getPooledClient("",0);
+        try (Response response = client.target(URI.create(uri)).request().get())
         {
-            ClientBuilder cliBuilder = ClientBuilder.newBuilder();
-            cliBuilder.connectTimeout(1, TimeUnit.SECONDS);
-            cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
-            Response response = cliBuilder.build().target(URI.create(uri)).request().get();
-            if (response.getStatus()>=200 && response.getStatus()<300) {
+            if (response.getStatus()>=200 && response.getStatus()<300)
+            {
                 state.setStatus(ServiceStatus.UP);
             }
             else 
@@ -195,6 +212,7 @@ public class ServiceUtil implements Serializable
             check.getData().put("error", ExceptionUtils.getMessage(pe));
             state.getChecks().add(check);
         }
+        client.close();
         return state;
     }
 
@@ -242,14 +260,19 @@ public class ServiceUtil implements Serializable
                         return  type;
                     }
                 });
+                response.close();
                 break;
             case 401:
+                response.close();
                 throw new ProcessusException("401 - NECESSITE UNE AUTHENTIFICATION");
             case 403:
+                response.close();
                 throw new ProcessusException("403 - VOUS N'ETES PAS AUTORISE A UTILISER CETTE RESSOURCE");
             case 404:
+                response.close();
                 throw new BusinessException(response.readEntity(String.class));
             default:
+                response.close();
                 throw new ProcessusException(response.readEntity(String.class));
         }
         return result;
