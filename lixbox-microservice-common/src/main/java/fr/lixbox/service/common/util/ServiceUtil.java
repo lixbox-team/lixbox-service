@@ -70,7 +70,7 @@ public class ServiceUtil implements Serializable
     
     
     
-    public static Client getPooledClient(String proxyHost, int proxyPort)
+    public static Client getPooledClient(String proxyHost, Integer proxyPort)
     {
         ResteasyClientBuilder cliBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
         cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
