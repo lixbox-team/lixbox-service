@@ -73,6 +73,7 @@ public abstract class MicroServiceClient implements MicroService
     protected String serviceVersion = "0.1";
     protected String proxyHost;
     protected Integer proxyPort;
+    protected Integer poolSize = 3;
     protected String staticUri = null;
     
     
@@ -301,7 +302,7 @@ public abstract class MicroServiceClient implements MicroService
         {
             if (currentService==null)
             {
-                currentService = ServiceUtil.getPooledClient(proxyHost, proxyPort);
+                currentService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
                 
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
                 String uri = getServiceURI();
@@ -327,7 +328,7 @@ public abstract class MicroServiceClient implements MicroService
         {
             if (currentSecureService==null)
             {
-                currentSecureService = ServiceUtil.getPooledClient(proxyHost, proxyPort);
+                currentSecureService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
                 
                 String uri = getServiceURI();

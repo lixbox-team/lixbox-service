@@ -70,9 +70,10 @@ public class ServiceUtil implements Serializable
     
     
     
-    public static Client getPooledClient(String proxyHost, Integer proxyPort)
+    public static Client getPooledClient(int poolSize, String proxyHost, Integer proxyPort)
     {
         ResteasyClientBuilder cliBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        cliBuilder.connectionPoolSize(poolSize);
         cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
         cliBuilder.connectionTTL(1, TimeUnit.MINUTES);
         cliBuilder.connectionCheckoutTimeout(50, TimeUnit.MILLISECONDS);
@@ -162,7 +163,7 @@ public class ServiceUtil implements Serializable
     public static ServiceState checkHealthMicroProfileHealth(String uri)
     {
         ServiceState state;
-        Client client = getPooledClient("",0);
+        Client client = getPooledClient(1,"",0);
         try
         {
             state = parseResponse(client.target(URI.create(uri+"/health")).request().get(), new GenericType<ServiceState>(){});
@@ -192,7 +193,7 @@ public class ServiceUtil implements Serializable
     public static ServiceState checkHealthHttp(String uri)
     {
         ServiceState state = new ServiceState();
-        Client client = getPooledClient("",0);
+        Client client = getPooledClient(1,"",0);
         try (Response response = client.target(URI.create(uri)).request().get())
         {
             if (response.getStatus()>=200 && response.getStatus()<300)
