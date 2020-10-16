@@ -105,6 +105,17 @@ public abstract class MicroServiceClient implements MicroService
     
     
     
+    public Integer getPoolSize()
+    {
+        return poolSize;
+    }
+    public void setPoolSize(Integer poolSize)
+    {
+        this.poolSize = poolSize;
+    }
+    
+    
+    
     public void setProxy(String proxyHost, int proxyPort)
     {
         this.proxyHost = proxyHost;
