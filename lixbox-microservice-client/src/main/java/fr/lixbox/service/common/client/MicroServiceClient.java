@@ -343,10 +343,6 @@ public abstract class MicroServiceClient implements MicroService
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
                 
                 String uri = getServiceURI();
-                if (!StringUtil.isEmpty(uri))
-                {
-                    target = currentSecureService.target(URI.create(uri));
-                }
                 if (!StringUtil.isEmpty(uri) && basicAuth!=null)
                 {
                     currentSecureService.register(basicAuth);
@@ -356,6 +352,10 @@ public abstract class MicroServiceClient implements MicroService
                 {
                     currentSecureService.register(tokenAuth);
                     launchSyncCache();
+                }
+                if (!StringUtil.isEmpty(uri))
+                {
+                    target = currentSecureService.target(URI.create(uri));
                 }
             }    
         }
