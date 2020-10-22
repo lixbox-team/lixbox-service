@@ -269,11 +269,16 @@ public class ServiceUtil implements Serializable
                 response.close();
                 throw new ProcessusException("403 - VOUS N'ETES PAS AUTORISE A UTILISER CETTE RESSOURCE");
             case 404:
-                String msg = response.readEntity(String.class);
+                BusinessException busExcept = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<BusinessException>(){});
                 response.close();
-                throw new BusinessException(msg);
+                throw busExcept;
+            case 503:
+                ProcessusException processExcept = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<ProcessusException>(){});
+                response.close();
+                throw processExcept;
+                
             default:
-                msg = response.readEntity(String.class);
+                String msg = response.readEntity(String.class);
                 response.close();
                 throw new ProcessusException(msg);
         }

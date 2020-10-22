@@ -28,6 +28,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import fr.lixbox.common.exceptions.ProcessusException;
+import fr.lixbox.io.json.JsonUtil;
 
 /**
  * Cette classe transforme une ProcessusException en une reponse
@@ -41,6 +42,6 @@ public class ProcessusExceptionMapper implements ExceptionMapper<ProcessusExcept
     @Override
     public Response toResponse(ProcessusException ex)
     {
-        return Response.status(503).entity(ex.getMessage()).type("text/plain").build();
+        return Response.status(503).entity(JsonUtil.transformObjectToJson(ex, true)).type("application/json").build();
     }
 }

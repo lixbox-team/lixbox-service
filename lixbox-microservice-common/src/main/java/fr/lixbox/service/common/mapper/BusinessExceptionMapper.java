@@ -28,6 +28,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import fr.lixbox.common.exceptions.BusinessException;
+import fr.lixbox.io.json.JsonUtil;
 
 /**
  * Cette classe transforme une BusinessException en une reponse
@@ -41,6 +42,6 @@ public class BusinessExceptionMapper implements ExceptionMapper<BusinessExceptio
     @Override
     public Response toResponse(BusinessException ex)
     {
-        return Response.status(404).entity(ex.getMessage()).type("text/plain").build();
+        return Response.status(404).entity(JsonUtil.transformObjectToJson(ex, true)).type("application/json").build();
     }
 }
