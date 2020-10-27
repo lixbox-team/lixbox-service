@@ -337,7 +337,7 @@ public abstract class MicroServiceClient implements MicroService
         WebTarget target = null;
         try
         {
-            if (currentSecureService==null)
+            if (currentSecureService==null || target == null)
             {
                 currentSecureService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
@@ -346,17 +346,16 @@ public abstract class MicroServiceClient implements MicroService
                 if (!StringUtil.isEmpty(uri) && basicAuth!=null)
                 {
                     currentSecureService.register(basicAuth);
-                    launchSyncCache();
                 }
                 if (!StringUtil.isEmpty(uri) && tokenAuth!=null)
                 {
                     currentSecureService.register(tokenAuth);
-                    launchSyncCache();
                 }
                 if (!StringUtil.isEmpty(uri))
                 {
                     target = currentSecureService.target(URI.create(uri));
                 }
+                launchSyncCache();
             }    
         }
         catch (Exception e)
