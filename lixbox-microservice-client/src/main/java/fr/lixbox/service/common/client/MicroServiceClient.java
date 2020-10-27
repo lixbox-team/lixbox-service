@@ -311,7 +311,7 @@ public abstract class MicroServiceClient implements MicroService
         WebTarget target = null;
         try
         {
-            if (currentService==null)
+            if (currentService==null || target == null)
             {
                 currentService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
                 
