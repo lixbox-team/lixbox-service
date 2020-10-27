@@ -311,16 +311,15 @@ public abstract class MicroServiceClient implements MicroService
         WebTarget target = null;
         try
         {
-            if (currentService==null || target == null)
+            if (currentService==null)
             {
                 currentService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
-                
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
-                String uri = getServiceURI();
-                if (!StringUtil.isEmpty(uri))
-                {
-                    target = currentService.target(URI.create(uri));
-                }
+            }
+            String uri = getServiceURI();
+            if (!StringUtil.isEmpty(uri))
+            {
+                target = currentService.target(URI.create(uri));
             }
         }
         catch (Exception e)
@@ -337,26 +336,25 @@ public abstract class MicroServiceClient implements MicroService
         WebTarget target = null;
         try
         {
-            if (currentSecureService==null || target == null)
+            if (currentSecureService==null)
             {
                 currentSecureService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
-                
-                String uri = getServiceURI();
-                if (!StringUtil.isEmpty(uri) && basicAuth!=null)
+                if (basicAuth!=null)
                 {
                     currentSecureService.register(basicAuth);
                 }
-                if (!StringUtil.isEmpty(uri) && tokenAuth!=null)
+                if (tokenAuth!=null)
                 {
                     currentSecureService.register(tokenAuth);
                 }
-                if (!StringUtil.isEmpty(uri))
-                {
-                    target = currentSecureService.target(URI.create(uri));
-                }
+            }
+            String uri = getServiceURI();
+            if (!StringUtil.isEmpty(uri))
+            {
+                target = currentSecureService.target(URI.create(uri));
                 launchSyncCache();
-            }    
+            }
         }
         catch (Exception e)
         {
