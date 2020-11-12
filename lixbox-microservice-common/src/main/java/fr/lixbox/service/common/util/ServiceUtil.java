@@ -196,7 +196,7 @@ public class ServiceUtil implements Serializable
         Client client = getPooledClient(1,"",0);
         try (Response response = client.target(URI.create(uri)).request().get())
         {
-            if (response.getStatus()>=200 && response.getStatus()<300)
+            if (response!=null && (response.getStatus()>=200 && response.getStatus()<300))
             {
                 state.setStatus(ServiceStatus.UP);
             }
