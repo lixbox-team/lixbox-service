@@ -185,7 +185,7 @@ public abstract class MicroServiceClient implements MicroService
     public ServiceState checkHealth()
     {
         ServiceState result;
-        if (currentService!=null)
+        if (getService()!=null)
         {
             result = ServiceUtil.checkHealth(serviceEntry.getType(), getService().getUri().toString());
         }

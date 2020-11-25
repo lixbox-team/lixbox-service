@@ -3,14 +3,14 @@
  *                           FRAMEWORK Lixbox
  *                          ==================
  *      
- * This file is part of lixbox-service.
+ *    This file is part of lixbox-service.
  *
- *    lixbox-supervision is free software: you can redistribute it and/or modify
+ *    lixbox-service is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation, either version 3 of the License, or
  *    (at your option) any later version.
  *
- *    lixbox-supervision is distributed in the hope that it will be useful,
+ *    lixbox-service is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
@@ -30,18 +30,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLSession;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -76,7 +73,7 @@ public class RegistryServiceClient implements RegistryService
     private Map<String, ServiceEntry> cache = new HashMap<>();
     
     private transient TypeReference<HashMap<String, ServiceEntry>> typeRef = new TypeReference<HashMap<String, ServiceEntry>>(){};
-    private transient WebTarget currentRegistry = null;
+    private transient Client currentRegistry = null;
     private transient JsonFileStore jsonFileStore;
     
         
@@ -154,37 +151,8 @@ public class RegistryServiceClient implements RegistryService
     {
         return checkHealth();
     }  
-    
-    
-    
-    /**
-     * Cette methode renvoie l'uri du service registry
-     * courant
-     * 
-     * @return l'uri
-     */
-    public String getCurrentRegistryServiceUri()
-    {        
-        String currentUri = "";
-        try
-        {
-            if (currentRegistry!=null)
-            {
-                currentUri = currentRegistry.getUri().toString();
-            }
-            else
-            {
-                currentUri = getRegistryServiceURI();
-            }
-        }
-        catch (Exception e)
-        {
-            LOG.debug(e);
-        }
-        return currentUri;
-    }
-        
-    
+
+
 
     /**
      * Cette methode ajoute une URI à un service. 
@@ -198,7 +166,7 @@ public class RegistryServiceClient implements RegistryService
     @Override
     public boolean registerService(String name, String version, ServiceType type, String uri)
     {
-        boolean result = false;        
+        boolean result = false;
         WebTarget registryService = getRegistryService();
         if (registryService!=null)
         {
@@ -206,17 +174,19 @@ public class RegistryServiceClient implements RegistryService
                 .queryParam("uri", uri).queryParam("type", type)
                 .request().get();
             result = response.readEntity(Boolean.class);
+            response.close();
+            clearClients();
             if (result)
             {
                 cache.put(name+version, discoverService(name, version));
                 jsonFileStore.write(cache);
             }
-            response.close();
         }
         return result;
     }
 
 
+    
 
     /**
      * Cette methode retire une URI d'un service. 
@@ -249,6 +219,7 @@ public class RegistryServiceClient implements RegistryService
                 jsonFileStore.write(cache);
             }
             response.close();
+            clearClients();
         }
         return result;
     }
@@ -290,7 +261,19 @@ public class RegistryServiceClient implements RegistryService
         {
             result = cache.get(name+version);
         }
+        clearClients();
         return result;
+    }
+    
+    
+    
+    private void clearClients()
+    {
+        if (currentRegistry!=null)
+        {
+            currentRegistry.close();
+            currentRegistry=null;
+        }
     }
 
 
@@ -333,36 +316,37 @@ public class RegistryServiceClient implements RegistryService
         {
             result = getServiceURI(cache.get(name+version));
         }
+        clearClients();
         return result;
     }
     
     
     
     
-	/**
-	 * Cette méthode récupère les entrées correspondant à un nom
-	 * indépendemment des versions
-	 * 
-	 * @return null si rien ne correspond
-	 * 		   un liste des entrées 
-	 */
-	@Override
-	public List<ServiceEntry> getEntries(String name) 
-	{
-		List<ServiceEntry> result = new ArrayList<>();
+    /**
+     * Cette méthode récupère les entrées correspondant à un nom
+     * indépendemment des versions
+     * 
+     * @return null si rien ne correspond
+     *         un liste des entrées 
+     */
+    @Override
+    public List<ServiceEntry> getEntries(String name) 
+    {
+        List<ServiceEntry> result = new ArrayList<>();
         WebTarget registryService = getRegistryService();
         if(registryService != null)
         {
-        	Response response = registryService.path(ENTRIES_PATH).path(name).request().get();
-        	try 
-        	{
+            Response response = registryService.path(ENTRIES_PATH).path(name).request().get();
+            try 
+            {
                 result = response.readEntity( new GenericType<List<ServiceEntry>>(){});
-			} 
-        	catch (ProcessingException pe) 
-        	{
-        		LOG.info(EMPTY_REPONSE_MSG+pe.getMessage());
-        		LOG.trace(pe);
-			}
+            } 
+            catch (ProcessingException pe) 
+            {
+                LOG.info(EMPTY_REPONSE_MSG+pe.getMessage());
+                LOG.trace(pe);
+            }
             finally 
             {
                 if (response!=null)
@@ -370,45 +354,46 @@ public class RegistryServiceClient implements RegistryService
                     response.close();
                 }
             }
-    			
+                
         }
         else
         {
-        	for(Map.Entry<String, ServiceEntry> entry : cache.entrySet())
-        	{
-        		if(entry.getKey().contains(name))
-    			{
-    				result.add(entry.getValue());
-    			}
-        	}
+            for(Map.Entry<String, ServiceEntry> entry : cache.entrySet())
+            {
+                if(entry.getKey().contains(name))
+                {
+                    result.add(entry.getValue());
+                }
+            }
         }
-		return result;
-	} 
-	
-	
-	
+        clearClients();
+        return result;
+    } 
+    
+    
+    
 
-	
-	/**
-	 * Cette méthode récupère toutes les entries
-	 */
-	@Override
-	public List<ServiceEntry> getEntries() 
-	{
-		List<ServiceEntry> result = new ArrayList<>();
+    
+    /**
+     * Cette méthode récupère toutes les entries
+     */
+    @Override
+    public List<ServiceEntry> getEntries() 
+    {
+        List<ServiceEntry> result = new ArrayList<>();
         WebTarget registryService = getRegistryService();
         if(registryService != null)
         {
-        	Response response = registryService.path(ENTRIES_PATH).request().get();
-        	try 
-        	{
+            Response response = registryService.path(ENTRIES_PATH).request().get();
+            try 
+            {
                 result = response.readEntity( new GenericType<List<ServiceEntry>>(){});
-			} 
-        	catch (ProcessingException pe) 
-        	{
-        		LOG.info(EMPTY_REPONSE_MSG+pe.getMessage());
-        		LOG.trace(pe);
-			}
+            } 
+            catch (ProcessingException pe) 
+            {
+                LOG.info(EMPTY_REPONSE_MSG+pe.getMessage());
+                LOG.trace(pe);
+            }
             finally 
             {
                 if (response!=null)
@@ -419,13 +404,14 @@ public class RegistryServiceClient implements RegistryService
         }
         else
         {
-        	for(Map.Entry<String, ServiceEntry> entry : cache.entrySet())
-        	{
-				result.add(entry.getValue());
-        	}
+            for(Map.Entry<String, ServiceEntry> entry : cache.entrySet())
+            {
+                result.add(entry.getValue());
+            }
         }
-		return result;
-	} 
+        clearClients();
+        return result;
+    } 
 
 
     
@@ -441,7 +427,7 @@ public class RegistryServiceClient implements RegistryService
         WebTarget registryService = getRegistryService();
         if (registryService!=null)
         {
-            Response response = getRegistryService().path("version").request().get();        
+            Response response = registryService.path("version").request().get();        
             try
             {
                 if (response.getStatus()==200)
@@ -496,16 +482,24 @@ public class RegistryServiceClient implements RegistryService
      */
     private WebTarget getRegistryService()
     {   
-        if(currentRegistry==null || ServiceStatus.DOWN.equals(ServiceUtil.checkHealthMicroProfileHealth(currentRegistry.getUri().toString()).getStatus()))
+        WebTarget target = null;
+        try
         {
-            ClientBuilder cliBuilder = ClientBuilder.newBuilder();
-            ((ResteasyClientBuilder) cliBuilder).connectionPoolSize(3);
-            ((ResteasyClientBuilder) cliBuilder).connectionTTL(1, TimeUnit.SECONDS);
-            ((ResteasyClientBuilder) cliBuilder).connectionCheckoutTimeout(20, TimeUnit.MILLISECONDS);
-            cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
-            currentRegistry = cliBuilder.build().target(URI.create(getRegistryServiceURI()));
+            if (currentRegistry==null)
+            {
+                currentRegistry = ServiceUtil.getPooledClient(1, "", 0);
+            }
+            String uri = getCurrentRegistryServiceUri();
+            if (!StringUtil.isEmpty(uri))
+            {
+                target = currentRegistry.target(URI.create(uri));
+            }
         }
-        return currentRegistry;
+        catch (Exception e)
+        {
+            LOG.fatal(e);
+        }
+        return target;
     }
 
     
@@ -517,7 +511,7 @@ public class RegistryServiceClient implements RegistryService
      * 
      * @throws ProcessusException s'il est impossible de trouver aucun service d'enregistrement actif.
      */
-    private String getRegistryServiceURI()
+    public String getCurrentRegistryServiceUri()
     {
         return getServiceURI(cache.get(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION));
     }
