@@ -30,5 +30,5 @@ package fr.lixbox.service.registry.model.health;
  */
 public enum ServiceStatus
 {
-    UP, DOWN;
+    UP, DOWN, DEGRADED;
 }
