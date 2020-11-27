@@ -94,13 +94,11 @@ public abstract class MicroServiceClient implements MicroService
     {
         serviceRegistry = new RegistryServiceClient(serviceRegistryUri);
         loadInfosService();
-        LOG.debug(getService());
     }
     public void init()
     {
         serviceRegistry = new RegistryServiceClient();
         loadInfosService(); 
-        LOG.debug(getService());
     }
     
     
