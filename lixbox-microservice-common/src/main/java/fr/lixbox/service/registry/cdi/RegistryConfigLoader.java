@@ -67,12 +67,15 @@ public class RegistryConfigLoader implements Serializable
         if (StringUtil.isEmpty(registryURI))
         {
             setRegistryURI(lireConfigLocale());
-            LOG.info("Registry uri: "+registryURI);
         }
         
         if (StringUtil.isEmpty(registryURI))
         {   
             LOG.debug("========> ABSENCE DE FICHIER DE CONFIGURATION DU REGISTRY");
+        }
+        else
+        {
+            LOG.info("Uri du RegistryService extraite du fichier: "+registryURI);
         }
         return registryURI;
     }
