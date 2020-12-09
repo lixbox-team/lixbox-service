@@ -3,13 +3,6 @@ project(':lixbox-microservice-client'){
         // projects
         compile project(':lixbox-microservice-common')
         
-        //lixbox
-        compile(group: 'fr.lixbox.lixbox-common', name: 'lixbox-core', version: version_lixbox_common)
-        compile(group: 'fr.lixbox.lixbox-io', name: 'lixbox-json', version: version_lixbox_io)
-        
-        //divers
-        compileOnly (group: 'jakarta.platform', name: 'jakarta.jakartaee-api', version: '8.0.0')
-        
         //quarkus
         compileOnly group: 'io.quarkus', name: 'quarkus-resteasy', version: version_quarkus
         compileOnly group: 'io.quarkus', name: 'quarkus-resteasy-jackson', version: version_quarkus
@@ -17,7 +10,7 @@ project(':lixbox-microservice-client'){
         
 
         // ================================ Test ================================
-		testCompile 'junit:junit:4.12'
+        testCompile group: 'junit', name:'junit', version: version_junit
 	}
     
     jar{

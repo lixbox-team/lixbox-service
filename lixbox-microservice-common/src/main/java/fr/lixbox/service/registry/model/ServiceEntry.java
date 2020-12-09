@@ -5,12 +5,12 @@
  *      
  * This file is part of lixbox-service.
  *
- *    lixbox-supervision is free software: you can redistribute it and/or modify
+ *    lixbox-service is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation, either version 3 of the License, or
  *    (at your option) any later version.
  *
- *    lixbox-supervision is distributed in the hope that it will be useful,
+ *    lixbox-service is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
@@ -145,7 +145,7 @@ public class ServiceEntry implements Serializable
         {
             for (Instance instance : getInstances())
             {
-                if (ServiceStatus.UP.equals(instance.getLiveState().getStatus()))
+                if (instance.isLive())
                 {
                     this.primary = instance;
                     break;
@@ -195,7 +195,7 @@ public class ServiceEntry implements Serializable
     @Override
     public String toString() 
     {
-        String result = "Content error";
+        String result = "{}";
         ObjectMapper mapper = new ObjectMapper();
         try {
             result = mapper.writeValueAsString(this);

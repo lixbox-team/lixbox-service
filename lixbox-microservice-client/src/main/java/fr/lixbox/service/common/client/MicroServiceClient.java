@@ -26,14 +26,15 @@ package fr.lixbox.service.common.client;
 import java.net.URI;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import fr.lixbox.common.exceptions.BusinessException;
 import fr.lixbox.common.exceptions.ProcessusException;
@@ -60,8 +61,8 @@ public abstract class MicroServiceClient implements MicroService
     private static final Log LOG = LogFactory.getLog(MicroServiceClient.class);
         
     protected transient RegistryService serviceRegistry;
-    protected transient WebTarget currentService;
-    protected transient WebTarget currentSecureService;
+    protected transient Client currentService;
+    protected transient Client currentSecureService;
     protected transient BasicAuthentication basicAuth;
     protected transient TokenAuthentication tokenAuth;
 
@@ -72,6 +73,7 @@ public abstract class MicroServiceClient implements MicroService
     protected String serviceVersion = "0.1";
     protected String proxyHost;
     protected Integer proxyPort;
+    protected Integer poolSize = 3;
     protected String staticUri = null;
     
     
@@ -92,13 +94,22 @@ public abstract class MicroServiceClient implements MicroService
     {
         serviceRegistry = new RegistryServiceClient(serviceRegistryUri);
         loadInfosService();
-        LOG.debug(getService());
     }
     public void init()
     {
         serviceRegistry = new RegistryServiceClient();
         loadInfosService(); 
-        LOG.debug(getService());
+    }
+    
+    
+    
+    public Integer getPoolSize()
+    {
+        return poolSize;
+    }
+    public void setPoolSize(Integer poolSize)
+    {
+        this.poolSize = poolSize;
     }
     
     
@@ -148,8 +159,17 @@ public abstract class MicroServiceClient implements MicroService
     
     public void clearClients()
     {
-        this.currentSecureService = null;
-        this.currentService = null;
+        if (this.currentSecureService!=null)
+        {
+            this.currentSecureService.close();
+            this.currentSecureService = null;
+        }
+        if (this.currentService!=null)
+        {
+            this.currentService.close();
+            this.currentService = null;
+        }
+        this.serviceEntry = null;
     }
     
 
@@ -163,11 +183,12 @@ public abstract class MicroServiceClient implements MicroService
     public ServiceState checkHealth()
     {
         ServiceState result;
-        if (currentService!=null)
+        if (getService()!=null)
         {
-            result = ServiceUtil.checkHealth(serviceEntry.getType(), currentService.getUri().toString());
+            result = ServiceUtil.checkHealth(serviceEntry.getType(), getService().getUri().toString());
         }
-        else {
+        else 
+        {
             result = new ServiceState(ServiceStatus.DOWN);
         }
         return result;
@@ -210,6 +231,7 @@ public abstract class MicroServiceClient implements MicroService
                 {
                     result = response.readEntity(String.class);
                 }
+                response.close();
             }
         }
         catch (ProcessingException pe)
@@ -262,7 +284,7 @@ public abstract class MicroServiceClient implements MicroService
                 serviceVersion = serviceEntry.getVersion();
                 for (Instance instance : serviceEntry.getInstances())
                 {
-                    if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance.getUri()).getStatus()))
+                    if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance).getStatus()))
                     {   
                         uriFound = instance.getUri();
                         break;
@@ -284,67 +306,78 @@ public abstract class MicroServiceClient implements MicroService
     
     protected WebTarget getService()
     {
+        WebTarget target = null;
         try
         {
             if (currentService==null)
             {
-                ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
-                clientBuilder = clientBuilder.connectionPoolSize(20);
-                clientBuilder.disableTrustManager();
-                if (StringUtil.isNotEmpty(proxyHost))
-                {
-                    clientBuilder.defaultProxy(proxyHost,proxyPort);
-                }
+                currentService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
-                String uri = getServiceURI();
-                if (!StringUtil.isEmpty(uri))
-                {
-                    currentService = clientBuilder.build().target(URI.create(uri));
-                }
+            }
+            String uri = getServiceURI();
+            if (!StringUtil.isEmpty(uri))
+            {
+                target = currentService.target(URI.create(uri));
             }
         }
         catch (Exception e)
         {
             LOG.fatal(e);
         }
-        return currentService;
+        return target;
     }
     
     
     
     protected WebTarget getSecureService()
     {
+        WebTarget target = null;
         try
         {
             if (currentSecureService==null)
             {
-                ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
-                clientBuilder = clientBuilder.connectionPoolSize(20);
-                clientBuilder.disableTrustManager();
-                if (StringUtil.isNotEmpty(proxyHost))
+                currentSecureService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
+                this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
+                if (basicAuth!=null)
                 {
-                    clientBuilder.defaultProxy(proxyHost,proxyPort);
-                }
-                String uri =  getServiceURI();
-                if (!StringUtil.isEmpty(uri) && basicAuth!=null)
-                {
-                    currentSecureService = clientBuilder.build().target(URI.create(uri));
                     currentSecureService.register(basicAuth);
-                    launchSyncCache();                    
                 }
-                if (!StringUtil.isEmpty(uri) && tokenAuth!=null)
+                if (tokenAuth!=null)
                 {
-                    currentSecureService = clientBuilder.build().target(URI.create(uri));
                     currentSecureService.register(tokenAuth);
-                    launchSyncCache();                    
                 }
-            }    
+            }
+            String uri = getServiceURI();
+            if (!StringUtil.isEmpty(uri))
+            {
+                target = currentSecureService.target(URI.create(uri));
+                launchSyncCache();
+            }
         }
         catch (Exception e)
         {
             LOG.fatal(e);
         }
-        return currentSecureService;
+        return target;
+    }
+    
+
+    
+    protected <T> T parseResponse(Response response, TypeReference<T> type) throws BusinessException
+    {
+        T result;
+        try
+        {
+            result = ServiceUtil.parseResponse(response, type);
+        }
+        catch(ProcessingException pe)
+        {
+            currentSecureService = null;
+            currentService = null;
+            serviceEntry = null;
+            throw pe;
+        }
+        return result;
     }
     
 
@@ -360,6 +393,7 @@ public abstract class MicroServiceClient implements MicroService
         {
             currentSecureService = null;
             currentService = null;
+            serviceEntry = null;
             throw pe;
         }
         return result;

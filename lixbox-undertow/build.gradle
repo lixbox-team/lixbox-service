@@ -1,14 +1,12 @@
 project(':lixbox-undertow'){
 	dependencies {
-        //lixbox
-        
         //divers
         compileOnly (group: 'io.undertow', name: 'undertow-core', version: '2.1.0.Final')
         compileOnly (group: 'io.undertow', name: 'undertow-servlet', version: '2.1.0.Final')
         
 
         // ================================ Test ================================
-		testCompile 'junit:junit:4.12'
+        testCompile group: 'junit', name:'junit', version: version_junit
 	}
     
     jar{

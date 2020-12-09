@@ -19,17 +19,20 @@ project(':lixbox-wildfly-util'){
         //lixbox
         compile(group: 'fr.lixbox.lixbox-common', name: 'lixbox-core', version: version_lixbox_common) 
         compileOnly ("io.thorntail:webservices:$thorntailVersion")
-        compileOnly (group: 'jakarta.platform', name: 'jakarta.jakartaee-api', version: '8.0.0')
+        
+        
+        //jakarta
+        compileOnly group: 'jakarta.enterprise', name: 'jakarta.enterprise.cdi-api', version: '2.0.2'
+        
 
 
         // ================================ Test ================================
-        testImplementation "junit:junit:4.12"
+        testCompile group: 'junit', name:'junit', version: version_junit
         testImplementation ("io.thorntail:webservices:$thorntailVersion")
         testImplementation ("io.thorntail:gradle-arquillian-adapter:$thorntailVersion")
         testImplementation (enforcedPlatform("io.thorntail:bom-all:$thorntailVersion"))
         testImplementation ("io.thorntail:gradle-arquillian-adapter:$thorntailVersion")
         testImplementation 'org.jboss.arquillian.extension:arquillian-jacoco:1.0.0.Alpha9'
-        testCompileOnly (group: 'jakarta.platform', name: 'jakarta.jakartaee-api', version: '8.0.0')
 	}
     
     jar{

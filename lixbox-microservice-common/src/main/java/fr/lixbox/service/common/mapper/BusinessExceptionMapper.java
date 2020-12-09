@@ -5,12 +5,12 @@
  *      
  * This file is part of lixbox-service.
  *
- *    lixbox-supervision is free software: you can redistribute it and/or modify
+ *    lixbox-service is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation, either version 3 of the License, or
  *    (at your option) any later version.
  *
- *    lixbox-supervision is distributed in the hope that it will be useful,
+ *    lixbox-service is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
@@ -28,6 +28,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import fr.lixbox.common.exceptions.BusinessException;
+import fr.lixbox.io.json.JsonUtil;
 
 /**
  * Cette classe transforme une BusinessException en une reponse
@@ -41,6 +42,6 @@ public class BusinessExceptionMapper implements ExceptionMapper<BusinessExceptio
     @Override
     public Response toResponse(BusinessException ex)
     {
-        return Response.status(404).entity(ex.getMessage()).type("text/plain").build();
+        return Response.status(404).entity(JsonUtil.transformObjectToJson(ex, true)).type("application/json").build();
     }
 }
