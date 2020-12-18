@@ -53,6 +53,7 @@ public class Section implements Serializable
     private String text;
     private List<Fact> facts;
     private List<Image> images;
+    private boolean markdown;
     @JsonProperty("potentialAction") private List<Action> potentialActions;
 
     
@@ -202,6 +203,17 @@ public class Section implements Serializable
     public void setImages(List<Image> images)
     {
         this.images = images;
+    }
+    
+    
+    
+    public boolean isMarkdown()
+    {
+        return markdown;
+    }
+    public void setMarkdown(boolean markdown)
+    {
+        this.markdown = markdown;
     }
     
     
