@@ -23,7 +23,7 @@ buildscript {
     }
 }
 plugins {
-    id "org.ajoberstar.grgit" version "3.1.1"
+    id "org.ajoberstar.grgit" version "4.1.0"
     id "com.github.spotbugs" version "3.0.0"
     id 'maven-publish'
 }
@@ -68,6 +68,7 @@ if (config.desc_project.withQuarkus)
 {
     apply from: 'gradle/with-quarkus.gradle'  
 }
+apply from: 'gradle/project-critical-update.gradle'
 
 import org.ajoberstar.grgit.Credentials
 import  org.ajoberstar.grgit.Person
@@ -383,7 +384,7 @@ subprojects {
     }
 
     spotbugs {
-        toolVersion = '3.1.12'
+        toolVersion = '4.1.0'
         effort = 'max'
         excludeFilter file('../gradle/config/findbugsExcludeFilter.xml')
     }

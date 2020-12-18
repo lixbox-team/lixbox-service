@@ -39,7 +39,7 @@ import javax.ws.rs.core.MediaType;
 import fr.lixbox.service.common.MicroService;
 
 /**
- * Cette interface represente les fonctions disponnibles
+ * Cette interface represente les fonctions disponibles
  * dans le service de cache.
  * 
  * @author ludovic.terral
