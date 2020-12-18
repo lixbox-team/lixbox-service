@@ -23,6 +23,8 @@
  ******************************************************************************/
 package fr.lixbox.service.msteams.model.input;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -37,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({ @JsonSubTypes.Type(value = DateInput.class, name = "DateInput"),
         @JsonSubTypes.Type(value = MultichoiceInput.class, name = "MultichoiceInput"),
         @JsonSubTypes.Type(value = TextInput.class, name = "TextInput") })
-public interface Input
+public interface Input extends Serializable
 {
     // ----------- Attribut(s) -----------
     String getId();

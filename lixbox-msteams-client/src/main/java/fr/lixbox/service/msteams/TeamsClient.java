@@ -80,6 +80,7 @@ public class TeamsClient extends MicroServiceClient implements MicroService
     @Override
     protected void syncCache()
     {
+        //no cache
     }
     @Override
     protected void loadCache()

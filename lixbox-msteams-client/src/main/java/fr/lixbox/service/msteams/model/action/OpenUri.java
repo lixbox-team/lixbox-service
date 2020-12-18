@@ -23,7 +23,6 @@
  ******************************************************************************/
 package fr.lixbox.service.msteams.model.action;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +38,7 @@ import fr.lixbox.io.json.JsonUtil;
  * @author ludovic.terral
  */
 @JsonTypeName("OpenUri")
-public class OpenUri implements Action, Serializable
+public class OpenUri implements Action
 {
     // ----------- Attribut(s) -----------
     private static final long serialVersionUID = 202012181144L;

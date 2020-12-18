@@ -23,13 +23,12 @@
  ******************************************************************************/
 package fr.lixbox.service.msteams.model.input;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import fr.lixbox.io.json.JsonUtil;
-
-import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * https://docs.microsoft.com/en-us/outlook/actionable-messages/message-card-reference#dateinput
@@ -37,7 +36,7 @@ import java.util.Objects;
  * @author ludovic.terral
  */
 @JsonTypeName("DateInput")
-public class DateInput implements Input, Serializable
+public class DateInput implements Input
 {
     // ----------- Attribut(s) -----------
     private static final long serialVersionUID = 202012181135L;

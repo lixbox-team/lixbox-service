@@ -23,7 +23,6 @@
  ******************************************************************************/
 package fr.lixbox.service.msteams.model.action;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +39,7 @@ import fr.lixbox.service.msteams.model.input.Input;
  * @author ludovic.terral
  */
 @JsonTypeName("ActionCard")
-public class ActionCard implements Action, Serializable
+public class ActionCard implements Action
 {
     // ----------- Attribut(s) -----------
     private static final long serialVersionUID = 202012181149L;

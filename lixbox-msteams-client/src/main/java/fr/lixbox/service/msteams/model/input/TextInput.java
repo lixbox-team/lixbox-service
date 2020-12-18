@@ -23,7 +23,6 @@
  ******************************************************************************/
 package fr.lixbox.service.msteams.model.input;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,7 +36,7 @@ import fr.lixbox.io.json.JsonUtil;
  * @author ludovic.terral
  */
 @JsonTypeName("TextInput")
-public class TextInput implements Input, Serializable
+public class TextInput implements Input
 {
     // ----------- Attribut(s) -----------
     private static final long serialVersionUID = 202012181133L;

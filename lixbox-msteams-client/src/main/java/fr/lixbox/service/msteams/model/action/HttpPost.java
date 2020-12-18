@@ -23,14 +23,13 @@
  ******************************************************************************/
 package fr.lixbox.service.msteams.model.action;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
-import fr.lixbox.io.json.JsonUtil;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+import fr.lixbox.io.json.JsonUtil;
 
 /**
  *  https://docs.microsoft.com/en-us/outlook/actionable-messages/card-reference#httppost-action
@@ -38,7 +37,7 @@ import java.util.Objects;
  *  @author ludovic.terral
  */
 @JsonTypeName("HttpPOST")
-public class HttpPost implements Action, Serializable
+public class HttpPost implements Action
 {
     // ----------- Attribut(s) -----------
     private static final long serialVersionUID = 202012181145L;

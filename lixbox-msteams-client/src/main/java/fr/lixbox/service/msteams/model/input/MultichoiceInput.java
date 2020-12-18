@@ -23,7 +23,6 @@
  ******************************************************************************/
 package fr.lixbox.service.msteams.model.input;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,7 +38,7 @@ import fr.lixbox.io.json.JsonUtil;
  * @author ludovic.terral
  */
 @JsonTypeName("MultichoiceInput")
-public class MultichoiceInput implements Input, Serializable
+public class MultichoiceInput implements Input
 {
     // ----------- Attribut(s) -----------
     private static final long serialVersionUID = 202012181134L;
