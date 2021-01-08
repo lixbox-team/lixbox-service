@@ -164,14 +164,14 @@ public class RegistryServiceClient implements RegistryService
      * @return true si le registre a bien été mis à jour.
      */
     @Override
-    public boolean registerService(String name, String version, ServiceType type, String uri)
+    public boolean registerService(String name, String version, ServiceType type, String uri, String endPointUri)
     {
         boolean result = false;
         WebTarget registryService = getRegistryService();
         if (registryService!=null)
         {
             Response response = registryService.path("/register").path(name).path(version)
-                .queryParam("uri", uri).queryParam("type", type)
+                .queryParam("uri", uri).queryParam("type", type).queryParam("endPointUri", endPointUri)
                 .request().get();
             result = response.readEntity(Boolean.class);
             response.close();
