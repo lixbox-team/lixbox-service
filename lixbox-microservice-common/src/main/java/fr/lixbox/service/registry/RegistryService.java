@@ -58,7 +58,7 @@ public interface RegistryService  extends MicroService
     
 
     // ----------- Methodes ----------- 
-    @GET @Path("/register/{name}/{version}") boolean registerService( @PathParam("name") String name,  @PathParam("version") String version, @QueryParam("type") ServiceType type,  @QueryParam("uri") String uri);
+    @GET @Path("/register/{name}/{version}") boolean registerService( @PathParam("name") String name,  @PathParam("version") String version, @QueryParam("type") ServiceType type,  @QueryParam("uri") String uri, @QueryParam("endPointUri") String endPointUri);
     @DELETE @Path("/unregister/{name}/{version}") boolean unregisterService( @PathParam("name") String name,  @PathParam("version") String version,  @QueryParam("uri") String uri);
     @GET @Path("/discover/{name}/{version}") ServiceEntry discoverService( @PathParam("name") String name,  @PathParam("version") String version);
     @GET @Path("/entries/{name}") List<ServiceEntry> getEntries( @PathParam("name") String name);
