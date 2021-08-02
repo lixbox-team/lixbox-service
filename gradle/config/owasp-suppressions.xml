@@ -253,5 +253,161 @@
    ]]></notes>
    <packageUrl regex="true">^pkg:maven/org\.jboss\.resteasy/resteasy\-jaxrs@.*$</packageUrl>
    <cpe>cpe:/a:redhat:resteasy</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: arc-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus\.arc/arc@.*$</packageUrl>
+   <cpe>cpe:/a:arc_project:arc</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: arc-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus\.arc/arc@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-arc-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-arc@.*$</packageUrl>
+   <cpe>cpe:/a:arc_project:arc</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-arc-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-arc@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-bootstrap-runner-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-bootstrap\-runner@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-core-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-core@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-development-mode-spi-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-development\-mode\-spi@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-ide-launcher-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-ide\-launcher@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-jackson-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-jackson@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-netty-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-netty@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-rest-client-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-rest\-client@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-resteasy-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-resteasy-common-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy\-common@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-resteasy-jackson-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy\-jackson@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: vertx-core-3.9.4.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.vertx/vertx\-core@.*$</packageUrl>
+   <cpe>cpe:/a:eclipse:vert.x</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-resteasy-server-common-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy\-server\-common@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-security-runtime-spi-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-security\-runtime\-spi@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-vertx-core-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-vertx\-core@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: quarkus-vertx-http-1.9.2.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-vertx\-http@.*$</packageUrl>
+   <cpe>cpe:/a:quarkus:quarkus</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: resteasy-client-api-4.5.8.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.jboss\.resteasy/resteasy\-client\-api@.*$</packageUrl>
+   <cpe>cpe:/a:redhat:resteasy</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: resteasy-client-microprofile-4.5.8.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.jboss\.resteasy/resteasy\-client\-microprofile@.*$</packageUrl>
+   <cpe>cpe:/a:redhat:resteasy</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: resteasy-core-spi-4.5.8.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.jboss\.resteasy/resteasy\-core\-spi@.*$</packageUrl>
+   <cpe>cpe:/a:redhat:resteasy</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: resteasy-jackson2-provider-4.5.8.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.jboss\.resteasy/resteasy\-jackson2\-provider@.*$</packageUrl>
+   <cpe>cpe:/a:redhat:resteasy</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: resteasy-jaxb-provider-4.5.8.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.jboss\.resteasy/resteasy\-jaxb\-provider@.*$</packageUrl>
+   <cpe>cpe:/a:redhat:resteasy</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: vertx-bridge-common-3.9.4.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.vertx/vertx\-bridge\-common@.*$</packageUrl>
+   <cpe>cpe:/a:eclipse:vert.x</cpe>
+</suppress><suppress>
+   <notes><![CDATA[
+   file name: resteasy-core-4.5.8.Final.jar
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.jboss\.resteasy/resteasy\-core@.*$</packageUrl>
+   <cpe>cpe:/a:redhat:resteasy</cpe>
 </suppress>
 </suppressions>

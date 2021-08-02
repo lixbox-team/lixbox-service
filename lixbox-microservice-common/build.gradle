@@ -1,8 +1,8 @@
 project(':lixbox-microservice-common'){
 	dependencies {
         //lixbox
-        compile(group: 'fr.lixbox.lixbox-common', name: 'lixbox-core', version: version_lixbox_common)
-        compile(group: 'fr.lixbox.lixbox-io', name: 'lixbox-json', version: version_lixbox_io)
+        api(group: 'fr.lixbox.lixbox-common', name: 'lixbox-core', version: version_lixbox_common)
+        api(group: 'fr.lixbox.lixbox-io', name: 'lixbox-json', version: version_lixbox_io)
         
         //quarkus
         compileOnly group: 'io.quarkus', name: 'quarkus-resteasy', version: version_quarkus
@@ -11,10 +11,10 @@ project(':lixbox-microservice-common'){
         
 
         // ================================ Test ================================
-        testCompile group: 'junit', name:'junit', version: version_junit
-		testCompile group: 'io.quarkus', name: 'quarkus-resteasy', version: version_quarkus
-        testCompile group: 'io.quarkus', name: 'quarkus-resteasy-jackson', version: version_quarkus
-        testCompile group: 'io.quarkus', name: 'quarkus-rest-client', version: version_quarkus
+        testImplementation group: 'junit', name:'junit', version: version_junit
+		testImplementation group: 'io.quarkus', name: 'quarkus-resteasy', version: version_quarkus
+        testImplementation group: 'io.quarkus', name: 'quarkus-resteasy-jackson', version: version_quarkus
+        testImplementation group: 'io.quarkus', name: 'quarkus-rest-client', version: version_quarkus
 	}
     
     jar{

@@ -17,17 +17,21 @@ project(':lixbox-wildfly-util'){
     
 	dependencies {
         //lixbox
-        compile(group: 'fr.lixbox.lixbox-common', name: 'lixbox-core', version: version_lixbox_common) 
+        api(group: 'fr.lixbox.lixbox-common', name: 'lixbox-core', version: version_lixbox_common) 
         compileOnly ("io.thorntail:webservices:$thorntailVersion")
         
         
         //jakarta
         compileOnly group: 'jakarta.enterprise', name: 'jakarta.enterprise.cdi-api', version: '2.0.2'
-        
+
+
+        //divers
+        compileOnly (group: 'io.undertow', name: 'undertow-core', version: '2.2.9.Final')
+        compileOnly (group: 'io.undertow', name: 'undertow-servlet', version: '2.2.9.Final')
 
 
         // ================================ Test ================================
-        testCompile group: 'junit', name:'junit', version: version_junit
+        testImplementation group: 'junit', name:'junit', version: version_junit
         testImplementation ("io.thorntail:webservices:$thorntailVersion")
         testImplementation ("io.thorntail:gradle-arquillian-adapter:$thorntailVersion")
         testImplementation (enforcedPlatform("io.thorntail:bom-all:$thorntailVersion"))

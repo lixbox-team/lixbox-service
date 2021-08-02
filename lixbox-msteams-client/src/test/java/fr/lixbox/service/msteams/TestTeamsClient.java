@@ -46,7 +46,7 @@ import fr.lixbox.service.msteams.model.input.TextInput;
  */
 public class TestTeamsClient
 {
-    private static final String URI = "https://outlook.office.com/webhook/c9008dee-554f-4dd8-ad2c-8abd7c2e4aae@5537759b-887c-47a7-8e95-30d34433924e/IncomingWebhook/4f7d075ad0e54ae58bdc3daa78ba2100/4ec20581-7e0d-440b-80f5-493a6ee2d101";
+    private static final String URI = "https://marseilleport.webhook.office.com/webhookb2/c9008dee-554f-4dd8-ad2c-8abd7c2e4aae@5537759b-887c-47a7-8e95-30d34433924e/IncomingWebhook/fdd0e246324e4fed9e1402c06a96f812/4ec20581-7e0d-440b-80f5-493a6ee2d101";
     
     
     

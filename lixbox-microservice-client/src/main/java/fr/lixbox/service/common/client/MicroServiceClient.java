@@ -337,7 +337,14 @@ public abstract class MicroServiceClient implements MicroService
             if (currentSecureService==null)
             {
                 currentSecureService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
-                this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
+                int retry=0;
+                do {
+                    this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
+                    retry++;
+                }
+                while (this.serviceEntry==null && retry<3);
+                    
+                
                 if (basicAuth!=null)
                 {
                     currentSecureService.register(basicAuth);

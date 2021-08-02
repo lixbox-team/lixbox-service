@@ -1,7 +1,7 @@
 project(':lixbox-microservice-client'){
 	dependencies {
         // projects
-        compile project(':lixbox-microservice-common')
+        api project(':lixbox-microservice-common')
         
         //quarkus
         compileOnly group: 'io.quarkus', name: 'quarkus-resteasy', version: version_quarkus
@@ -10,7 +10,7 @@ project(':lixbox-microservice-client'){
         
 
         // ================================ Test ================================
-        testCompile group: 'junit', name:'junit', version: version_junit
+        testImplementation group: 'junit', name:'junit', version: version_junit
 	}
     
     jar{
