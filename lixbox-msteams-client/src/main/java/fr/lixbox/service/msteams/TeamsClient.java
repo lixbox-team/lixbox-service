@@ -111,7 +111,7 @@ public class TeamsClient extends MicroServiceClient implements MicroService
         {
             Response response = service
                     .path("/")
-                    .request().post(Entity.json(JsonUtil.transformObjectToJson(message, false)));
+                    .request().header("User-Agent", "Lixteam|lixbox-bot/1.0").post(Entity.json(JsonUtil.transformObjectToJson(message, false)));
             result = parseResponse(response, new GenericType<Boolean>() {});
         }
         else
