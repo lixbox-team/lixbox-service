@@ -27,8 +27,9 @@ import java.net.URI;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import fr.lixbox.common.exceptions.BusinessException;
 import fr.lixbox.common.exceptions.ProcessusException;
@@ -95,6 +96,39 @@ public class TeamsClient extends MicroServiceClient implements MicroService
     
     
     
+    protected Boolean parseSpecificReponse(Response response) throws BusinessException
+    {
+        Boolean result = false;
+        switch(response.getStatus())
+        {
+            case 200:
+            case 201:
+                String payload = response.readEntity(String.class);
+                if (!payload.contains("HTTP error 429"))
+                {
+                    result = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<Boolean>() {});
+                }
+                response.close();
+                break;
+            case 404:
+                BusinessException busExcept = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<BusinessException>(){});
+                response.close();
+                throw busExcept;
+            case 503:
+                ProcessusException processExcept = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<ProcessusException>(){});
+                response.close();
+                throw processExcept;
+                
+            default:
+                String msg = response.readEntity(String.class);
+                response.close();
+                throw new ProcessusException(msg);
+        }
+        return result;
+    }
+    
+    
+    
     public boolean sendMessage(Card message) throws BusinessException
     {
       //Controler les parametres
@@ -112,7 +146,7 @@ public class TeamsClient extends MicroServiceClient implements MicroService
             Response response = service
                     .path("/")
                     .request().header("User-Agent", "Lixteam|lixbox-bot/1.0").post(Entity.json(JsonUtil.transformObjectToJson(message, false)));
-            result = parseResponse(response, new GenericType<Boolean>() {});
+            result = this.parseSpecificReponse(response);
         }
         else
         {
