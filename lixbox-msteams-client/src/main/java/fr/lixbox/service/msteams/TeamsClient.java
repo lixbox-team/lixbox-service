@@ -106,7 +106,7 @@ public class TeamsClient extends MicroServiceClient implements MicroService
                 String payload = response.readEntity(String.class);
                 if (!payload.contains("HTTP error 429"))
                 {
-                    result = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<Boolean>() {});
+                    result = JsonUtil.transformJsonToObject(payload, new TypeReference<Boolean>() {});
                 }
                 response.close();
                 break;
