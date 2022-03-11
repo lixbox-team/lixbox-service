@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -309,7 +310,7 @@ public abstract class MicroServiceClient implements MicroService
         WebTarget target = null;
         try
         {
-            if (currentService==null)
+            if (currentService==null || ((ResteasyClient)currentService).isClosed())
             {
                 currentService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
@@ -334,7 +335,7 @@ public abstract class MicroServiceClient implements MicroService
         WebTarget target = null;
         try
         {
-            if (currentSecureService==null)
+            if (currentSecureService==null || ((ResteasyClient)currentSecureService).isClosed()) 
             {
                 currentSecureService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
                 int retry=0;

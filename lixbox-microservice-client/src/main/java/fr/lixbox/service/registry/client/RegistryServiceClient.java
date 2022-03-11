@@ -39,6 +39,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -485,7 +486,7 @@ public class RegistryServiceClient implements RegistryService
         WebTarget target = null;
         try
         {
-            if (currentRegistry==null)
+            if (currentRegistry==null || ((ResteasyClient)currentRegistry).isClosed()) 
             {
                 currentRegistry = ServiceUtil.getPooledClient(1, "", 0);
             }
