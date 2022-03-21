@@ -39,7 +39,7 @@ import org.jboss.resteasy.util.BasicAuthHelper;
  */
 public class BasicAuthentication implements ClientRequestFilter
 {
-   private final String authHeader;
+   private String authHeader;
 
    /**
     *
@@ -47,6 +47,11 @@ public class BasicAuthentication implements ClientRequestFilter
     * @param password password
     */
    public BasicAuthentication(final String username, final String password)
+   {
+       setData(username, password);
+   }
+   
+   public void setData(final String username, final String password)
    {
       authHeader = BasicAuthHelper.createHeader(username, password);
    }

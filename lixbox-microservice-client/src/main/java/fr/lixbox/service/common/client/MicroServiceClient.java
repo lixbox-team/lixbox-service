@@ -123,12 +123,16 @@ public abstract class MicroServiceClient implements MicroService
     }
     
     
+    
     public void setCredentials(String user, String password)
     {
-        basicAuth = new BasicAuthentication(user, password);
-        if (currentSecureService!=null)
+        if (basicAuth==null)
         {
-            currentSecureService.register(basicAuth);
+            basicAuth = new BasicAuthentication(user, password);
+        }
+        else
+        {
+            basicAuth.setData(user, password);
         }
     }
     
@@ -136,10 +140,13 @@ public abstract class MicroServiceClient implements MicroService
     
     public void setToken(String type, String token)
     {
-        tokenAuth = new TokenAuthentication(type, token);
-        if (currentSecureService!=null)
+        if (tokenAuth==null)
         {
-            currentSecureService.register(tokenAuth);
+            tokenAuth = new TokenAuthentication(type, token);
+        }
+        else
+        {
+            tokenAuth.setData(type, token);
         }
     }
     

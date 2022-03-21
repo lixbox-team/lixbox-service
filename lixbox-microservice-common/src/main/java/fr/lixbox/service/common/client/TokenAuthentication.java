@@ -38,12 +38,19 @@ import javax.ws.rs.core.HttpHeaders;
 public class TokenAuthentication implements ClientRequestFilter
 {
     // ----------- Attribut(s) -----------
-    private final String authHeader;
+    private String authHeader;
 
 
 
     // ----------- Methode(s) -----------
     public TokenAuthentication(String type, String token)
+    {
+        setData(type, token);
+    }
+    
+    
+    
+    public void setData(String type, String token)
     {
         authHeader = type + " " + token;
     }
