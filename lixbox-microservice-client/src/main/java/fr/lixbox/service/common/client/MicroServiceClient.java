@@ -313,6 +313,7 @@ public abstract class MicroServiceClient implements MicroService
         }
         else
         {
+            this.clearClients();
             throw new ProcessusException("UNABLE TO FIND A LIVE INSTANCE OF "+serviceName+"-"+serviceVersion);
         }
     }
@@ -338,6 +339,10 @@ public abstract class MicroServiceClient implements MicroService
         catch (Exception e)
         {
             LOG.fatal(e);
+        }
+        if (target==null)
+        {
+            clearClients();
         }
         return target;
     }
@@ -379,6 +384,10 @@ public abstract class MicroServiceClient implements MicroService
         catch (Exception e)
         {
             LOG.fatal(e);
+        }
+        if (target==null)
+        {
+            clearClients();
         }
         return target;
     }
