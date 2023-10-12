@@ -78,6 +78,7 @@ public class ServiceUtil implements Serializable
         cliBuilder.connectionTTL(1, TimeUnit.MINUTES);
         cliBuilder.connectionCheckoutTimeout(50, TimeUnit.MILLISECONDS);
         cliBuilder.connectTimeout(2, TimeUnit.SECONDS);
+        cliBuilder.readTimeout(10, TimeUnit.SECONDS);
         cliBuilder.disableTrustManager();
         if (StringUtil.isNotEmpty(proxyHost))
         {
