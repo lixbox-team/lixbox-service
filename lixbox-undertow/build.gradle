@@ -1,8 +1,8 @@
 project(':lixbox-undertow'){
 	dependencies {
         //divers
-        compileOnly (group: 'io.undertow', name: 'undertow-core', version: '2.2.9.Final')
-        compileOnly (group: 'io.undertow', name: 'undertow-servlet', version: '2.2.9.Final')
+        compileOnly (group: 'io.undertow', name: 'undertow-core', version: '2.2.21.Final')
+        compileOnly (group: 'io.undertow', name: 'undertow-servlet', version: '2.2.21.Final')
         
 
         // ================================ Test ================================
