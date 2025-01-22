@@ -25,11 +25,11 @@ package fr.lixbox.service.common.client;
 
 import java.io.IOException;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.core.HttpHeaders;
-
 import org.jboss.resteasy.util.BasicAuthHelper;
+
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.core.HttpHeaders;
 
 /**
  * Client filter that will do token or bearer authentication.  
@@ -42,7 +42,6 @@ public class BasicAuthentication implements ClientRequestFilter
    private String authHeader;
 
    /**
-    *
     * @param username user name
     * @param password password
     */

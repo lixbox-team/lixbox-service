@@ -25,10 +25,6 @@ package fr.lixbox.service.msteams;
 
 import java.net.URI;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import fr.lixbox.common.exceptions.BusinessException;
@@ -38,6 +34,9 @@ import fr.lixbox.io.json.JsonUtil;
 import fr.lixbox.service.common.MicroService;
 import fr.lixbox.service.common.client.MicroServiceClient;
 import fr.lixbox.service.msteams.model.Card;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Cette classe est le client d'accès au service Microsoft Teams.

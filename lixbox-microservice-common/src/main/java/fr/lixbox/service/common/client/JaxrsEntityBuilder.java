@@ -26,17 +26,16 @@ package fr.lixbox.service.common.client;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Variant;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Form;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Variant;
 
 /**
  * Cette classe génère des entités pour les requêtes JAXRS
  * sur lesquelles on peut configurer l'encoding
  *
- * @author didier.gissinger
  * @author ludovic.terral
  */
 public class JaxrsEntityBuilder

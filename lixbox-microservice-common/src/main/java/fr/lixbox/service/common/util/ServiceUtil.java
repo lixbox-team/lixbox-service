@@ -25,19 +25,17 @@ package fr.lixbox.service.common.util;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.Socket;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLSession;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -50,6 +48,10 @@ import fr.lixbox.service.registry.model.ServiceType;
 import fr.lixbox.service.registry.model.health.Check;
 import fr.lixbox.service.registry.model.health.ServiceState;
 import fr.lixbox.service.registry.model.health.ServiceStatus;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Cet utilitaire sert à checker un service
@@ -64,7 +66,8 @@ public class ServiceUtil implements Serializable
 
     
     // ----------- Methode(s) -----------
-    private ServiceUtil() {
+    private ServiceUtil() 
+    {
         //classe utilitaire
     }
     
@@ -72,20 +75,35 @@ public class ServiceUtil implements Serializable
     
     public static Client getPooledClient(int poolSize, String proxyHost, Integer proxyPort)
     {
-        ResteasyClientBuilder cliBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-        cliBuilder.connectionPoolSize(poolSize);
-        cliBuilder.hostnameVerifier((String hostname, SSLSession session) -> true);
-        cliBuilder.connectionTTL(1, TimeUnit.MINUTES);
-        cliBuilder.connectionCheckoutTimeout(50, TimeUnit.MILLISECONDS);
-        cliBuilder.connectTimeout(2, TimeUnit.SECONDS);
-        cliBuilder.readTimeout(10, TimeUnit.SECONDS);
-        cliBuilder.disableTrustManager();
-        if (StringUtil.isNotEmpty(proxyHost))
-        {
-            cliBuilder.defaultProxy(proxyHost,proxyPort);
-        }
-        return cliBuilder.build();
-    }
+		try 
+		{
+			// Create an SSLContext that trusts all certificates (use only for development!)
+			SSLContext sslContext = SSLContextUtil.createTrustAllSSLContext();
+			HostnameVerifier hostnameVerifier = (hostname, session) -> true;
+
+			// Configure the RestClientBuilder
+			RestClientBuilder builder = RestClientBuilder.newBuilder()
+						.baseUri("http://localhost")
+						.sslContext(sslContext).hostnameVerifier(hostnameVerifier)
+						.connectTimeout(60, TimeUnit.SECONDS)
+						.readTimeout(60, TimeUnit.SECONDS)
+						.property("resteasy.connectionPoolSize", poolSize);
+
+			// Add proxy configuration if provided
+			if (proxyHost != null && !proxyHost.isEmpty() && proxyPort != null) 
+			{
+				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+				builder.property("resteasy.proxy", proxy);
+			}
+			return builder.build(Client.class);
+
+		} 
+		catch (Exception e) 
+		{
+			throw new RuntimeException("Failed to create REST client", e);
+		}
+	}
+    
     
     
     public static ServiceState checkHealth(ServiceType type, String uri) 

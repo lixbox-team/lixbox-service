@@ -29,15 +29,14 @@ import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import fr.lixbox.common.exceptions.ProcessusException;
 import fr.lixbox.common.util.StringUtil;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.Produces;
 
 /**
  * Cettte classe charge et produit la config du registry.

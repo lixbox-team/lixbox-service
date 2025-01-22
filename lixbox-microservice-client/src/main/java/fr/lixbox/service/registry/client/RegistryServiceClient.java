@@ -31,15 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -54,6 +47,11 @@ import fr.lixbox.service.registry.model.ServiceEntry;
 import fr.lixbox.service.registry.model.ServiceType;
 import fr.lixbox.service.registry.model.health.ServiceState;
 import fr.lixbox.service.registry.model.health.ServiceStatus;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Cette classe est le client d'accès au fixed-registry-service.
@@ -265,17 +263,6 @@ public class RegistryServiceClient implements RegistryService
         clearClients();
         return result;
     }
-    
-    
-    
-    private void clearClients()
-    {
-        if (currentRegistry!=null)
-        {
-            currentRegistry.close();
-            currentRegistry=null;
-        }
-    }
 
 
 
@@ -473,6 +460,31 @@ public class RegistryServiceClient implements RegistryService
             throw new ProcessusException("UNABLE TO CONNECT ON "+uri);
         }
     }
+
+    
+
+    /**
+     * Cette methode renvoie l'uri d'un service d'enregistrement actif
+     * 
+     * @return une URI d'un service actif
+     * 
+     * @throws ProcessusException s'il est impossible de trouver aucun service d'enregistrement actif.
+     */
+    public String getCurrentRegistryServiceUri()
+    {
+        return getServiceURI(cache.get(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION));
+    }
+
+    
+    
+    private void clearClients()
+    {
+        if (currentRegistry!=null)
+        {
+            currentRegistry.close();
+            currentRegistry=null;
+        }
+    }
     
     
     
@@ -486,7 +498,7 @@ public class RegistryServiceClient implements RegistryService
         WebTarget target = null;
         try
         {
-            if (currentRegistry==null || ((ResteasyClient)currentRegistry).isClosed()) 
+            if (currentRegistry==null || !isClientOpen(currentRegistry)) 
             {
                 currentRegistry = ServiceUtil.getPooledClient(1, "", 0);
             }
@@ -502,19 +514,20 @@ public class RegistryServiceClient implements RegistryService
         }
         return target;
     }
-
     
-
-    /**
-     * Cette methode renvoie l'uri d'un service d'enregistrement actif
-     * 
-     * @return une URI d'un service actif
-     * 
-     * @throws ProcessusException s'il est impossible de trouver aucun service d'enregistrement actif.
-     */
-    public String getCurrentRegistryServiceUri()
+    
+    
+    protected boolean isClientOpen(Client client) 
     {
-        return getServiceURI(cache.get(RegistryService.SERVICE_NAME+RegistryService.SERVICE_VERSION));
+        try 
+        {
+            client.target("http://test").request().head();
+            return true;
+        } 
+        catch (Exception e) 
+        {
+            return false;
+        }
     }
     
     

@@ -23,11 +23,11 @@
  ******************************************************************************/
 package fr.lixbox.service.msteams;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import fr.lixbox.service.msteams.model.Card;
 import fr.lixbox.service.msteams.model.Section;
@@ -39,17 +39,20 @@ import fr.lixbox.service.msteams.model.input.MultichoiceInput;
 import fr.lixbox.service.msteams.model.input.MultichoiceOption;
 import fr.lixbox.service.msteams.model.input.TextInput;
 
+
 /**
+ * Cette classe assure le test du service Teams.
  * 
  * @author ludovic.terral
- *
  */
 public class TestTeamsClient
 {
+    // ----------- Attribut(s) -----------
     private static final String URI = "https://lixtec.webhook.office.com/webhookb2/a33109e1-d967-4ee8-9398-cd2a033bcccf@9f42a344-3c4b-4a7f-bede-4577fca30ece/IncomingWebhook/e5b142b4bf36411db84add775f7bcc26/926b47a8-5875-45ab-8952-dba8c40aecc8";
     
     
-    
+
+    // ----------- Methode(s) -----------
     @Test
     public void test()
     {
@@ -101,5 +104,3 @@ public class TestTeamsClient
         }
     }
 }
-
-

@@ -1,249 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-
-<!-- absence d'alternatives correctives -->
-<suppress>
-   <notes><![CDATA[
-   file name: undertow-core-2.2.20.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.undertow/undertow\-core@.*$</packageUrl>
-   <cpe>cpe:/a:redhat:undertow</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: undertow-core-2.2.20.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.undertow/undertow\-core@.*$</packageUrl>
-   <vulnerabilityName>CVE-2016-6311</vulnerabilityName>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: undertow-core-2.2.20.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.undertow/undertow\-core@.*$</packageUrl>
-   <vulnerabilityName>CVE-2022-2764</vulnerabilityName>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: xnio-api-3.8.7.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.jboss\.xnio/xnio\-api@.*$</packageUrl>
-   <vulnerabilityName>CVE-2022-0084</vulnerabilityName>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: quarkus-fs-util-0.0.9.jar
-   ]]></notes>
+  <suppress>
+   <notes><![CDATA[eclipse:eclipse_ide]]></notes>
+   <cpe>cpe:/a:eclipse:eclipse_ide</cpe>
+  </suppress>
+  <suppress>
+   <notes><![CDATA[redhat:resteasy:3]]></notes>
+   <cpe>cpe:/a:redhat:resteasy</cpe>
+  </suppress>
+  <suppress>
+   <notes><![CDATA[cpe:/a:payara:payara]]></notes>
+   <cpe>cpe:/a:payara:payara</cpe>
+  </suppress>
+  <suppress>
+   <notes><![CDATA[cpe:/a:utils_project:utils]]></notes>
+   <cpe>cpe:/a:utils_project:utils</cpe>
+  </suppress>
+  
+  <suppress>
+   <notes><![CDATA[quarkus-fs-util-0.0.10]]></notes>
    <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-fs\-util@.*$</packageUrl>
    <cpe>cpe:/a:quarkus:quarkus</cpe>
-</suppress>
-
-<suppress>
-   <notes><![CDATA[
-   file name: jakarta.el-api-3.0.3.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/jakarta\.el/jakarta\.el\-api@.*$</packageUrl>
-   <cpe>cpe:/a:eclipse:jakarta_expression_language</cpe>
-</suppress>
-
-<!-- Alerte portant sur la top librairie mais pas sur celle-ci -->
-<suppress>
-   <notes><![CDATA[
-   file name: apache-mime4j-core-0.8.8.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.apache\.james/apache\-mime4j\-core@.*$</packageUrl>
-   <cpe>cpe:/a:apache:james</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: apache-mime4j-dom-0.8.8.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.apache\.james/apache\-mime4j\-dom@.*$</packageUrl>
-   <cpe>cpe:/a:apache:james</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: apache-mime4j-storage-0.8.8.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.apache\.james/apache\-mime4j\-storage@.*$</packageUrl>
-   <cpe>cpe:/a:apache:james</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: apache-mime4j-storage-0.8.8.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.apache\.james/apache\-mime4j\-storage@.*$</packageUrl>
-   <cpe>cpe:/a:storage_project:storage</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: apache-mime4j-dom-0.8.8.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.apache\.james/apache\-mime4j\-dom@.*$</packageUrl>
-   <cpe>cpe:/a:jdom:jdom</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: microprofile-config-api-2.0.1.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.eclipse\.microprofile\.config/microprofile\-config\-api@.*$</packageUrl>
-   <cpe>cpe:/a:config_file_provider_project:config_file_provider</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: microprofile-config-api-2.0.1.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.eclipse\.microprofile\.config/microprofile\-config\-api@.*$</packageUrl>
-   <cpe>cpe:/a:eclipse:eclipse_ide</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: microprofile-config-api-2.0.1.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.eclipse\.microprofile\.config/microprofile\-config\-api@.*$</packageUrl>
-   <cpe>cpe:/a:payara:payara</cpe>
-</suppress>
-
-
-<!-- Mauvaise détection -> association d'une mauvaise librairie -->
-<suppress>
-   <notes><![CDATA[
-   file name: asyncutil-0.1.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/com\.ibm\.async/asyncutil@.*$</packageUrl>
-   <cpe>cpe:/a:async_project:async</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: mutiny-1.8.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye\.reactive/mutiny@.*$</packageUrl>
-   <cpe>cpe:/a:mutiny:mutiny</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: mutiny-smallrye-context-propagation-1.8.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye\.reactive/mutiny\-smallrye\-context\-propagation@.*$</packageUrl>
-   <cpe>cpe:/a:mutiny:mutiny</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: vertx-mutiny-generator-2.27.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye\.reactive/vertx\-mutiny\-generator@.*$</packageUrl>
-   <cpe>cpe:/a:mutiny:mutiny</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: smallrye-mutiny-vertx-web-common-2.27.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye\.reactive/smallrye\-mutiny\-vertx\-web\-common@.*$</packageUrl>
-   <cpe>cpe:/a:mutiny:mutiny</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: smallrye-mutiny-vertx-web-2.27.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye\.reactive/smallrye\-mutiny\-vertx\-web@.*$</packageUrl>
-   <cpe>cpe:/a:mutiny:mutiny</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: smallrye-mutiny-vertx-uri-template-2.27.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye\.reactive/smallrye\-mutiny\-vertx\-uri\-template@.*$</packageUrl>
-   <cpe>cpe:/a:mutiny:mutiny</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: smallrye-mutiny-vertx-runtime-2.27.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye\.reactive/smallrye\-mutiny\-vertx\-runtime@.*$</packageUrl>
-   <cpe>cpe:/a:mutiny:mutiny</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: smallrye-mutiny-vertx-core-2.27.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye\.reactive/smallrye\-mutiny\-vertx\-core@.*$</packageUrl>
-   <cpe>cpe:/a:mutiny:mutiny</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: smallrye-mutiny-vertx-bridge-common-2.27.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye\.reactive/smallrye\-mutiny\-vertx\-bridge\-common@.*$</packageUrl>
-   <cpe>cpe:/a:mutiny:mutiny</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: smallrye-mutiny-vertx-auth-common-2.27.0.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye\.reactive/smallrye\-mutiny\-vertx\-auth\-common@.*$</packageUrl>
-   <cpe>cpe:/a:mutiny:mutiny</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: smallrye-context-propagation-storage-1.2.2.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.smallrye/smallrye\-context\-propagation\-storage@.*$</packageUrl>
-   <cpe>cpe:/a:storage_project:storage</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: quarkus-resteasy-server-common-2.14.2.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy\-server\-common@.*$</packageUrl>
-   <cpe>cpe:/a:quarkus:quarkus</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: quarkus-resteasy-server-common-2.14.2.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy\-server\-common@.*$</packageUrl>
-   <cpe>cpe:/a:redhat:resteasy</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: quarkus-resteasy-jackson-2.14.2.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy\-jackson@.*$</packageUrl>
-   <cpe>cpe:/a:quarkus:quarkus</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: quarkus-resteasy-jackson-2.14.2.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy\-jackson@.*$</packageUrl>
-   <cpe>cpe:/a:redhat:resteasy</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: quarkus-resteasy-common-2.14.2.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy\-common@.*$</packageUrl>
-   <cpe>cpe:/a:quarkus:quarkus</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: quarkus-resteasy-common-2.14.2.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy\-common@.*$</packageUrl>
-   <cpe>cpe:/a:redhat:resteasy</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: quarkus-resteasy-2.14.2.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy@.*$</packageUrl>
-   <cpe>cpe:/a:quarkus:quarkus</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: quarkus-resteasy-2.14.2.Final.jar
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus\-resteasy@.*$</packageUrl>
-   <cpe>cpe:/a:redhat:resteasy</cpe>
-</suppress>
+  </suppress>
+  
+  
+  <suppress>
+   <notes><![CDATA[CVE-2013-0136 - non applicable car faux positif]]></notes>
+   <cve>CVE-2013-0136</cve>
+  </suppress>
+  <suppress>
+   <notes><![CDATA[CVE-2014-3490 - non applicable car faux positif]]></notes>
+   <cve>CVE-2014-3490</cve>
+  </suppress>
+  <suppress>
+   <notes><![CDATA[CVE-2016-9606 - non applicable car faux positif]]></notes>
+   <cve>CVE-2016-9606</cve>
+  </suppress>
+  <suppress>
+   <notes><![CDATA[CVE-2018-15529 - non applicable car faux positif]]></notes>
+   <cve>CVE-2018-15529</cve>
+  </suppress>
+  <suppress>
+   <notes><![CDATA[CVE-2020-1695 - non applicable car faux positif]]></notes>
+   <cve>CVE-2020-1695</cve>
+  </suppress>
+  <suppress>
+   <notes><![CDATA[CVE-2020-10688 - non applicable car faux positif]]></notes>
+   <cve>CVE-2020-10688</cve>
+  </suppress>
+  <suppress>
+      <notes><![CDATA[Suppression de la cve incorrecte sur commons-net]]></notes>
+      <cve>CVE-2021-37533</cve>
+  </suppress>
+  <suppress>
+      <notes><![CDATA[Suppression CVE-2021-43138 - non applicable car faux positif]]></notes>
+      <cve>CVE-2021-43138</cve>
+  </suppress>
+  <suppress>
+      <notes><![CDATA[Suppression CVE-2022-37832 - non applicable car faux positif]]></notes>
+      <cve>CVE-2022-37832</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[Suppression de la cve incorrecte sur hutool-json v5.8.10]]></notes>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
+  <suppress>
+   <notes><![CDATA[Suppresion de la CVE-2023-5072]]></notes>
+   <cve>CVE-2023-5072</cve>
+  </suppress>
+  <suppress>
+   <notes><![CDATA[Suppresion de la CVE-2023-45960]]></notes>
+   <cve>CVE-2023-45960</cve>
+  </suppress>
 </suppressions>

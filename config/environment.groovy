@@ -2,12 +2,12 @@ desc_project{
     type="library"
     version{
         majorVersion=11
-        mediumVersion=1
-        minorVersion=2
+        mediumVersion=2
+        minorVersion=0
     }
     artefact{
-        group="fr.lixbox.lixbox-test"
-        project="lixbox-test"
+        group="fr.lixbox.lixbox-service"
+        project="lixbox-service"
         projectKey="${group}:${project}"
     }
 }
@@ -15,7 +15,7 @@ desc_project{
 pic{
     channel="lixbox"
 	git{
-	    uri="https://github.com/lixbox-team/lixbox-test.git"
+	    uri="https://github.com/lixbox-team/lixbox-service.git"
 	}    	
     jenkins{
         uri="https://ci.service.lixtec.fr/view/${channel}"

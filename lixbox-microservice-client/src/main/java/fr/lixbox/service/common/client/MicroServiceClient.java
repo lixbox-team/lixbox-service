@@ -25,15 +25,8 @@ package fr.lixbox.service.common.client;
 
 import java.net.URI;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -48,6 +41,11 @@ import fr.lixbox.service.registry.client.RegistryServiceClient;
 import fr.lixbox.service.registry.model.ServiceEntry;
 import fr.lixbox.service.registry.model.health.ServiceState;
 import fr.lixbox.service.registry.model.health.ServiceStatus;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Cette classe est le client d'accès minimal pour un microservice.
@@ -325,7 +323,7 @@ public abstract class MicroServiceClient implements MicroService
         WebTarget target = null;
         try
         {
-            if (currentService==null || ((ResteasyClient)currentService).isClosed())
+            if (currentService==null || !isClientOpen(currentSecureService)) 
             {
                 currentService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
@@ -338,7 +336,7 @@ public abstract class MicroServiceClient implements MicroService
         }
         catch (Exception e)
         {
-            LOG.fatal(e);
+            LOG.fatal(e,e);
         }
         if (target==null)
         {
@@ -354,7 +352,7 @@ public abstract class MicroServiceClient implements MicroService
         WebTarget target = null;
         try
         {
-            if (currentSecureService==null || ((ResteasyClient)currentSecureService).isClosed()) 
+            if (currentSecureService==null || !isClientOpen(currentSecureService)) 
             {
                 currentSecureService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
                 int retry=0;
@@ -390,6 +388,21 @@ public abstract class MicroServiceClient implements MicroService
             clearClients();
         }
         return target;
+    }
+    
+    
+    
+    protected boolean isClientOpen(Client client) 
+    {
+        try 
+        {
+            client.target("http://test").request().head();
+            return true;
+        } 
+        catch (Exception e) 
+        {
+            return false;
+        }
     }
     
 
