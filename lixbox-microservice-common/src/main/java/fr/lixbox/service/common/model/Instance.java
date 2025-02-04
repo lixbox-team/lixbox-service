@@ -27,12 +27,11 @@ import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.health.HealthCheckResponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fr.lixbox.service.registry.model.health.ServiceState;
 
 /**
  * Cette classe represente une instance d'un service
@@ -90,8 +89,8 @@ public class Instance implements Serializable
     private String uri;
     private boolean isLive=true;
     private boolean isReady=true;
-    private ServiceState liveState;
-    private ServiceState readyState;
+    private transient HealthCheckResponse liveState;
+    private transient HealthCheckResponse readyState;
     private String username;
     private String credential;
     private String token;
@@ -187,22 +186,22 @@ public class Instance implements Serializable
     
     
     
-    public ServiceState getLiveState()
+    public HealthCheckResponse getLiveState()
     {
         return liveState;
     }
-    public void setLiveState(ServiceState liveState)
+    public void setLiveState(HealthCheckResponse liveState)
     {
         this.liveState = liveState;
     }
 
 
 
-    public ServiceState getReadyState()
+    public HealthCheckResponse getReadyState()
     {
         return readyState;
     }
-    public void setReadyState(ServiceState readyState)
+    public void setReadyState(HealthCheckResponse readyState)
     {
         this.readyState = readyState;
     }

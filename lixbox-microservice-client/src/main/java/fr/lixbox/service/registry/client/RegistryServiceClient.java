@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.health.HealthCheckResponse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -45,8 +46,6 @@ import fr.lixbox.service.registry.RegistryService;
 import fr.lixbox.service.registry.cdi.RegistryConfigLoader;
 import fr.lixbox.service.registry.model.ServiceEntry;
 import fr.lixbox.service.registry.model.ServiceType;
-import fr.lixbox.service.registry.model.health.ServiceState;
-import fr.lixbox.service.registry.model.health.ServiceStatus;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.WebTarget;
@@ -125,12 +124,12 @@ public class RegistryServiceClient implements RegistryService
     
 
     @Override
-    public ServiceState checkHealth()
+    public HealthCheckResponse checkHealth()
     {
-        ServiceState state = new ServiceState(ServiceStatus.DOWN);
+        HealthCheckResponse state = HealthCheckResponse.down("registryService");
         if (currentRegistry!=null)
         {
-            state.setStatus(ServiceStatus.UP);
+            state = HealthCheckResponse.up("registryService");
         }
         return state;
     }
@@ -138,7 +137,7 @@ public class RegistryServiceClient implements RegistryService
     
     
     @Override
-    public ServiceState checkLive()
+    public HealthCheckResponse checkLive()
     {
         return checkHealth();
     }
@@ -146,7 +145,7 @@ public class RegistryServiceClient implements RegistryService
     
     
     @Override
-    public ServiceState checkReady()
+    public HealthCheckResponse checkReady()
     {
         return checkHealth();
     }  
@@ -444,7 +443,7 @@ public class RegistryServiceClient implements RegistryService
      */
     public void addRegistryServiceUri(String uri)
     {
-        if (ServiceStatus.UP.equals(ServiceUtil.checkHealthMicroProfileHealth(uri).getStatus()))
+        if (HealthCheckResponse.Status.UP.equals(ServiceUtil.checkHealthMicroProfileHealth(uri).getStatus()))
         {
             currentRegistry = null;
             init();
@@ -551,7 +550,7 @@ public class RegistryServiceClient implements RegistryService
         {
             serviceName = serviceEntry.getName();
             serviceVersion = serviceEntry.getVersion();
-            if (serviceEntry.getPrimary()!=null && ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), serviceEntry.getPrimary().getUri()).getStatus()))
+            if (serviceEntry.getPrimary()!=null && HealthCheckResponse.Status.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), serviceEntry.getPrimary().getUri()).getStatus()))
             {
                 uriFound = serviceEntry.getPrimary().getUri();
             }
@@ -559,7 +558,7 @@ public class RegistryServiceClient implements RegistryService
             {
                 for (Instance servInstance : serviceEntry.getInstances())
                 {
-                    if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), servInstance.getUri()).getStatus()))
+                    if (HealthCheckResponse.Status.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), servInstance.getUri()).getStatus()))
                     {
                         uriFound = servInstance.getUri();
                         serviceEntry.setPrimary(servInstance);

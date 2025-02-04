@@ -25,17 +25,16 @@ package fr.lixbox.service.common.util;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.Socket;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.HealthCheckResponseBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -43,13 +42,12 @@ import fr.lixbox.common.exceptions.BusinessException;
 import fr.lixbox.common.exceptions.ProcessusException;
 import fr.lixbox.common.util.StringUtil;
 import fr.lixbox.io.json.JsonUtil;
+import fr.lixbox.service.common.model.ClientConfig;
 import fr.lixbox.service.common.model.Instance;
 import fr.lixbox.service.registry.model.ServiceType;
-import fr.lixbox.service.registry.model.health.Check;
-import fr.lixbox.service.registry.model.health.ServiceState;
-import fr.lixbox.service.registry.model.health.ServiceStatus;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 
@@ -66,8 +64,7 @@ public class ServiceUtil implements Serializable
 
     
     // ----------- Methode(s) -----------
-    private ServiceUtil() 
-    {
+    private ServiceUtil() {
         //classe utilitaire
     }
     
@@ -75,44 +72,87 @@ public class ServiceUtil implements Serializable
     
     public static Client getPooledClient(int poolSize, String proxyHost, Integer proxyPort)
     {
-		try 
-		{
-			// Create an SSLContext that trusts all certificates (use only for development!)
-			SSLContext sslContext = SSLContextUtil.createTrustAllSSLContext();
-			HostnameVerifier hostnameVerifier = (hostname, session) -> true;
-
-			// Configure the RestClientBuilder
-			RestClientBuilder builder = RestClientBuilder.newBuilder()
-						.baseUri("http://localhost")
-						.sslContext(sslContext).hostnameVerifier(hostnameVerifier)
-						.connectTimeout(60, TimeUnit.SECONDS)
-						.readTimeout(60, TimeUnit.SECONDS)
-						.property("resteasy.connectionPoolSize", poolSize);
-
-			// Add proxy configuration if provided
-			if (proxyHost != null && !proxyHost.isEmpty() && proxyPort != null) 
-			{
-				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-				builder.property("resteasy.proxy", proxy);
-			}
-			return builder.build(Client.class);
-
-		} 
-		catch (Exception e) 
-		{
-			throw new RuntimeException("Failed to create REST client", e);
-		}
-	}
+        ResteasyClientBuilder cliBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        cliBuilder.connectionPoolSize(poolSize);
+        cliBuilder.connectionTTL(1, TimeUnit.MINUTES);
+        cliBuilder.connectionCheckoutTimeout(50, TimeUnit.MILLISECONDS);
+        cliBuilder.connectTimeout(2, TimeUnit.SECONDS);
+        cliBuilder.readTimeout(10, TimeUnit.SECONDS);
+        cliBuilder.disableTrustManager();
+        if (StringUtil.isNotEmpty(proxyHost))
+        {
+            cliBuilder.defaultProxy(proxyHost,proxyPort);
+        }
+        return cliBuilder.build();
+    }
     
     
     
-    public static ServiceState checkHealth(ServiceType type, String uri) 
+    /**
+     * Cette methode crée un client avec un pool de cnx
+     * @Nota: si vous souhaitez neutraliser la vérification d'hote, utilisez le code suivant: 
+     * (String hostname, SSLSession session) -> true
+     * 
+     * @param poolSize
+     * @param proxyHost
+     * @param proxyPort
+     * @param hostnameVerifier
+     * 
+     * @return un client de type ResteasyClient 
+     */
+    public static Client getPooledClient(int poolSize, String proxyHost, Integer proxyPort, HostnameVerifier hostnameVerifier)
+    {
+        ResteasyClientBuilder cliBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        cliBuilder.connectionPoolSize(poolSize);
+        cliBuilder.hostnameVerifier(hostnameVerifier);
+        cliBuilder.connectionTTL(1, TimeUnit.MINUTES);
+        cliBuilder.connectionCheckoutTimeout(50, TimeUnit.MILLISECONDS);
+        cliBuilder.connectTimeout(2, TimeUnit.SECONDS);
+        cliBuilder.readTimeout(10, TimeUnit.SECONDS);
+        cliBuilder.disableTrustManager();
+        if (StringUtil.isNotEmpty(proxyHost))
+        {
+            cliBuilder.defaultProxy(proxyHost,proxyPort);
+        }
+        return cliBuilder.build();
+    }
+    
+    
+    
+    /**
+     * Cette methode crée un client avec un pool de cnx
+     * @Nota: si vous souhaitez neutraliser la vérification d'hote, utilisez le code suivant: 
+     * (String hostname, SSLSession session) -> true
+     * 
+     * @param config
+     * @param hostnameVerifier
+     * 
+     * @return un client de type ResteasyClient 
+     */
+    public static Client getPooledClient(ClientConfig config, HostnameVerifier hostnameVerifier) {
+        ResteasyClientBuilder cliBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        cliBuilder.connectionPoolSize(config.getPoolSize());
+        cliBuilder.hostnameVerifier(hostnameVerifier);
+        cliBuilder.connectionTTL(config.getConnectionTTL(), config.getConnectionTTLUnit());
+        cliBuilder.connectionCheckoutTimeout(config.getConnectionCheckoutTimeout(), config.getConnectionCheckoutTimeoutUnit());
+        cliBuilder.connectTimeout(config.getConnectTimeout(), config.getConnectTimeoutUnit());
+        cliBuilder.readTimeout(config.getReadTimeout(), config.getReadTimeoutUnit());
+        cliBuilder.disableTrustManager();
+        if (StringUtil.isNotEmpty(config.getProxyHost())) {
+            cliBuilder.defaultProxy(config.getProxyHost(), config.getProxyPort());
+        }
+        return cliBuilder.build();
+    }
+    
+    
+    
+    public static HealthCheckResponse checkHealth(ServiceType type, String uri) 
     {
         if (type==null)
         {
             type=ServiceType.TCP;
         }
-        ServiceState state;
+        HealthCheckResponse state;
         switch (type)
         {
             case MANUAL:
@@ -134,13 +174,13 @@ public class ServiceUtil implements Serializable
 
     
     
-    public static ServiceState checkHealth(ServiceType type, Instance instance) 
+    public static HealthCheckResponse checkHealth(ServiceType type, Instance instance) 
     {
         if (type==null)
         {
             type=ServiceType.TCP;
         }
-        ServiceState state;
+        HealthCheckResponse state;
         switch (type)
         {
             case MANUAL:
@@ -162,10 +202,9 @@ public class ServiceUtil implements Serializable
 
 
     
-    public static ServiceState checkHealthManual(String uri)
+    public static HealthCheckResponse checkHealthManual(String uri)
     {   
-        ServiceState state = new ServiceState();
-        state.setStatus(ServiceStatus.UP);
+        HealthCheckResponse state = HealthCheckResponse.builder().up().build();
         if (StringUtil.isNotEmpty(uri) && (uri.startsWith("tcp") || uri.startsWith("remote")))
         {
             state = checkHealthTcp(uri);
@@ -179,29 +218,21 @@ public class ServiceUtil implements Serializable
 
     
 
-    public static ServiceState checkHealthMicroProfileHealth(String uri)
+    public static HealthCheckResponse checkHealthMicroProfileHealth(String uri)
     {
-        ServiceState state;
+        HealthCheckResponse state;
         Client client = getPooledClient(1,"",0);
         try
         {
-            state = parseResponse(client.target(URI.create(uri+"/health")).request().get(), new GenericType<ServiceState>(){});
+            state = parseResponse(client.target(URI.create(uri+"/health")).request().get(), new GenericType<HealthCheckResponse>(){});
         }
-        catch (BusinessException e) 
+        catch (BusinessException be) 
         {
-            state = new ServiceState();
-            state.setStatus(ServiceStatus.DOWN);
-            Check check = new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?");
-            check.getData().put("error", ExceptionUtils.getMessage(e));
-            state.getChecks().add(check);
+            state=HealthCheckResponse.builder().down().withData("error", ExceptionUtils.getMessage(be)).build();
         }
         catch (ProcessingException pe) 
         {
-            state = new ServiceState();
-            state.setStatus(ServiceStatus.DOWN);            
-            Check check = new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?");
-            check.getData().put("error", ExceptionUtils.getMessage(pe));
-            state.getChecks().add(check);
+            state=HealthCheckResponse.builder().down().withData("error", ExceptionUtils.getMessage(pe)).build();
         }
         client.close();
         return state;
@@ -209,58 +240,47 @@ public class ServiceUtil implements Serializable
 
 
 
-    public static ServiceState checkHealthHttp(String uri)
+    public static HealthCheckResponse checkHealthHttp(String uri)
     {
-        ServiceState state = new ServiceState();
+        HealthCheckResponseBuilder builder = HealthCheckResponse.builder();
         Client client = getPooledClient(1,"",0);
         try (Response response = client.target(URI.create(uri)).request().get())
         {
             if (response!=null && (response.getStatus()>=200 && response.getStatus()<300))
             {
-                state.setStatus(ServiceStatus.UP);
+                builder.up();
             }
             else 
             {
-                state.setStatus(ServiceStatus.DOWN);
+                builder.down();
             }
         }
         catch (ProcessingException pe) 
         {
-            state.setStatus(ServiceStatus.DOWN);
-            Check check = new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?");
-            check.getData().put("error", ExceptionUtils.getMessage(pe));
-            state.getChecks().add(check);
+            builder.down().withData(uri, false);
         }
         client.close();
-        return state;
+        return builder.build();
     }
 
 
 
-    public static ServiceState checkHealthTcp(String uri)
+    public static HealthCheckResponse checkHealthTcp(String uri)
     {
         String hostName = uri.substring(uri.indexOf(':')+3,uri.lastIndexOf(':'));
         String port = uri.substring(uri.lastIndexOf(':')+1);
+        HealthCheckResponseBuilder builder = HealthCheckResponse.builder();
         
-        
-        ServiceState state;
-        try(
-            Socket s = new Socket(hostName, Integer.parseInt(port));
-        )
+        try(Socket s = new Socket(hostName, Integer.parseInt(port));)
         {
             s.setSoTimeout(1000);            
-            state = new ServiceState();
-            state.setStatus(s.isBound()?ServiceStatus.UP:ServiceStatus.DOWN);
+            builder = s.isBound()?builder.up():builder.down();
         }
         catch (Exception e)
         {
-            state = new ServiceState();
-            state.setStatus(ServiceStatus.DOWN);
-            Check check = new Check(ServiceStatus.DOWN, "IS SERVICE LIVE?");
-            check.getData().put("error", ExceptionUtils.getMessage(e));
-            state.getChecks().add(check);
+            builder.down().withData(uri, false);
         }
-        return state;
+        return builder.build();
     }
     
     
@@ -270,8 +290,7 @@ public class ServiceUtil implements Serializable
         T result;
         switch(response.getStatus())
         {
-            case 200:
-            case 201:
+            case 200, 201:
                 result = JsonUtil.transformJsonToObject(response.readEntity(String.class), new TypeReference<T>()
                 {
                     @Override

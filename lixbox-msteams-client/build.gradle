@@ -2,28 +2,16 @@ project(':lixbox-msteams-client'){
 	dependencies {
         // projects
         api project(':lixbox-microservice-client')
-
-
-        api(group: 'jakarta.ws.rs', name: 'jakarta.ws.rs-api', version: '4.0.0')
-        api(group: 'jakarta.inject', name: 'jakarta.inject-api', version: '2.0.1')
-        api(group: 'jakarta.enterprise', name: 'jakarta.enterprise.cdi-api', version: '4.1.0')
+        
+        //quarkus
+        compileOnly group: 'io.quarkus', name: 'quarkus-resteasy', version: version_quarkus
+        compileOnly group: 'io.quarkus', name: 'quarkus-resteasy-jackson', version: version_quarkus
+        compileOnly group: 'io.quarkus', name: 'quarkus-rest-client', version: version_quarkus
+        
 
         // ================================ Test ================================
-	    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: version_junit
-	    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: version_junit
-
-
-    	testImplementation group: 'org.eclipse.microprofile.rest.client', name: 'microprofile-rest-client-api', version: '4.0'
-    	
-//		testImplementation group: 'org.jboss.resteasy.microprofile', name: 'microprofile-rest-client', version: '3.0.1.Final'
-
-		testImplementation group: 'org.apache.geronimo.config', name: 'geronimo-config-impl', version: '1.2.3'
-		
-    testImplementation group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: '4.0.0-M2'
-    testImplementation group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '4.0.0-M2'
-		testImplementation group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '4.0.0-M2'
-
-    	
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: version_junit
+        testImplementation group: 'io.quarkus', name: 'quarkus-rest-client', version: version_quarkus
 	}
     
     jar{
@@ -39,7 +27,6 @@ project(':lixbox-msteams-client'){
     eclipse{
         wtp{
             facet {
-                facet name: 'jst.cdi', version: '2.0'
                 facet name: 'jst.utility', version: '1.0'
             }
         }

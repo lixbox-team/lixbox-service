@@ -36,6 +36,7 @@ import jakarta.ws.rs.core.Variant;
  * Cette classe génère des entités pour les requêtes JAXRS
  * sur lesquelles on peut configurer l'encoding
  *
+ * @author didier.gissinger
  * @author ludovic.terral
  */
 public class JaxrsEntityBuilder

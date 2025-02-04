@@ -25,8 +25,11 @@ package fr.lixbox.service.common.client;
 
 import java.net.URI;
 
+import javax.net.ssl.HostnameVerifier;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.health.HealthCheckResponse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -34,13 +37,12 @@ import fr.lixbox.common.exceptions.BusinessException;
 import fr.lixbox.common.exceptions.ProcessusException;
 import fr.lixbox.common.util.StringUtil;
 import fr.lixbox.service.common.MicroService;
+import fr.lixbox.service.common.model.ClientConfig;
 import fr.lixbox.service.common.model.Instance;
 import fr.lixbox.service.common.util.ServiceUtil;
 import fr.lixbox.service.registry.RegistryService;
 import fr.lixbox.service.registry.client.RegistryServiceClient;
 import fr.lixbox.service.registry.model.ServiceEntry;
-import fr.lixbox.service.registry.model.health.ServiceState;
-import fr.lixbox.service.registry.model.health.ServiceStatus;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.WebTarget;
@@ -67,6 +69,8 @@ public abstract class MicroServiceClient implements MicroService
 
     protected static final String SECURE_PATH = "secure";
     
+    protected ClientConfig clientConfig;
+    protected transient HostnameVerifier hostnameVerifier;
     protected ServiceEntry serviceEntry;
     protected String serviceName = "micro-service";
     protected String serviceVersion = "0.1";
@@ -120,6 +124,21 @@ public abstract class MicroServiceClient implements MicroService
         clearClients();
     }
     
+    
+    
+    public void setClientConfig(ClientConfig clientConfig)
+    {
+        this.clientConfig=clientConfig;
+        clearClients();
+    }
+    
+    
+    
+    public void setHostnameVerifier(HostnameVerifier hostnameVerifier)
+    {
+        this.hostnameVerifier=hostnameVerifier;
+        clearClients();
+    }
     
     
     public void setCredentials(String user, String password)
@@ -193,16 +212,16 @@ public abstract class MicroServiceClient implements MicroService
      * @return true si dispo
      */
     @Override
-    public ServiceState checkHealth()
+    public HealthCheckResponse checkHealth()
     {
-        ServiceState result;
+        HealthCheckResponse result;
         if (getService()!=null)
         {
             result = ServiceUtil.checkHealth(serviceEntry.getType(), getService().getUri().toString());
         }
         else 
         {
-            result = new ServiceState(ServiceStatus.DOWN);
+            result = HealthCheckResponse.down(serviceEntry.getName());
         }
         return result;
     }
@@ -210,7 +229,7 @@ public abstract class MicroServiceClient implements MicroService
     
 
     @Override
-    public ServiceState checkLive()
+    public HealthCheckResponse checkLive()
     {
         return checkHealth();
     }
@@ -218,7 +237,7 @@ public abstract class MicroServiceClient implements MicroService
     
     
     @Override
-    public ServiceState checkReady()
+    public HealthCheckResponse checkReady()
     {
         return checkHealth();
     }
@@ -297,7 +316,7 @@ public abstract class MicroServiceClient implements MicroService
                 serviceVersion = serviceEntry.getVersion();
                 for (Instance instance : serviceEntry.getInstances())
                 {
-                    if (ServiceStatus.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance).getStatus()))
+                    if (HealthCheckResponse.Status.UP.equals(ServiceUtil.checkHealth(serviceEntry.getType(), instance).getStatus()))
                     {   
                         uriFound = instance.getUri();
                         break;
@@ -325,7 +344,9 @@ public abstract class MicroServiceClient implements MicroService
         {
             if (currentService==null || !isClientOpen(currentSecureService)) 
             {
-                currentService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
+                currentService = clientConfig==null?
+                        ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort):
+                            ServiceUtil.getPooledClient(clientConfig, hostnameVerifier);
                 this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);
             }
             String uri = getServiceURI();
@@ -354,7 +375,9 @@ public abstract class MicroServiceClient implements MicroService
         {
             if (currentSecureService==null || !isClientOpen(currentSecureService)) 
             {
-                currentSecureService = ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort);
+                currentSecureService = clientConfig==null?
+                        ServiceUtil.getPooledClient(poolSize, proxyHost, proxyPort):
+                            ServiceUtil.getPooledClient(clientConfig, hostnameVerifier);
                 int retry=0;
                 do {
                     this.serviceEntry = serviceRegistry.discoverService(serviceName, serviceVersion);

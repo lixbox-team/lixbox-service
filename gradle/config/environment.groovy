@@ -1,9 +1,9 @@
 desc_project{
     type="library"
     version{
-        majorVersion=11
+        majorVersion=17
         mediumVersion=1
-        minorVersion=2
+        minorVersion=0
     }
     artefact{
         group="fr.lixbox.lixbox-service"

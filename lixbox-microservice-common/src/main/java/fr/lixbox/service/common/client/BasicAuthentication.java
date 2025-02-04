@@ -42,6 +42,7 @@ public class BasicAuthentication implements ClientRequestFilter
    private String authHeader;
 
    /**
+    *
     * @param username user name
     * @param password password
     */

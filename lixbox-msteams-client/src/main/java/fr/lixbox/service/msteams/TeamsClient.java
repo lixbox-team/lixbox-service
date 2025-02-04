@@ -100,8 +100,7 @@ public class TeamsClient extends MicroServiceClient implements MicroService
         Boolean result = false;
         switch(response.getStatus())
         {
-            case 200:
-            case 201:
+            case 200, 201:
                 String payload = response.readEntity(String.class);
                 if (!payload.contains("HTTP error 429"))
                 {

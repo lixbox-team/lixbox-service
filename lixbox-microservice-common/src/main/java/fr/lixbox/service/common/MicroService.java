@@ -25,7 +25,8 @@ package fr.lixbox.service.common;
 
 import java.io.Serializable;
 
-import fr.lixbox.service.registry.model.health.ServiceState;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -48,8 +49,8 @@ public interface MicroService extends Serializable
     
 
 	// ----------- Methode -----------
-    @GET @Path("/health") ServiceState checkHealth();
-    @GET @Path("/health/live") ServiceState checkLive();
-    @GET @Path("/health/ready") ServiceState checkReady();
+    @GET @Path("/health") HealthCheckResponse checkHealth();
+    @GET @Path("/health/live") HealthCheckResponse checkLive();
+    @GET @Path("/health/ready") HealthCheckResponse checkReady();
     @GET @Path("/version") String getVersion();
 }

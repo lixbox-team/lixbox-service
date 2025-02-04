@@ -4,18 +4,28 @@ project(':lixbox-microservice-common'){
         api(group: 'fr.lixbox.lixbox-common', name: 'lixbox-core', version: version_lixbox_common)
         api(group: 'fr.lixbox.lixbox-io', name: 'lixbox-json', version: version_lixbox_io)
         
+                
         //jakarta
         api(group: 'jakarta.ws.rs', name: 'jakarta.ws.rs-api', version: '4.0.0')
         api(group: 'jakarta.inject', name: 'jakarta.inject-api', version: '2.0.1')
         api(group: 'jakarta.enterprise', name: 'jakarta.enterprise.cdi-api', version: '4.1.0')
         
+        
         //resteasy
-		compileOnly group: 'org.jboss.resteasy', name: 'resteasy-client-api', version: '6.2.11.Final'
-		compileOnly group: 'org.jboss.resteasy', name: 'resteasy-client', version: '6.2.11.Final'
-    	compileOnly group: 'org.eclipse.microprofile.rest.client', name: 'microprofile-rest-client-api', version: '4.0'
-    
+        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-client-api', version: '6.2.11.Final'
+        compileOnly group: 'org.jboss.resteasy', name: 'resteasy-client', version: '6.2.11.Final'
+        
+       
+        //microprofile 
+        api group: 'org.eclipse.microprofile.rest.client', name: 'microprofile-rest-client-api', version: '4.0'
+        api group: 'org.eclipse.microprofile.health', name: 'microprofile-health-api', version: '3.1'
+
 
         // ================================ Test ================================
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: version_junit
+		testImplementation group: 'io.quarkus', name: 'quarkus-resteasy', version: version_quarkus
+        testImplementation group: 'io.quarkus', name: 'quarkus-resteasy-jackson', version: version_quarkus
+        testImplementation group: 'io.quarkus', name: 'quarkus-rest-client', version: version_quarkus
 	}
     
     jar{
@@ -31,7 +41,6 @@ project(':lixbox-microservice-common'){
     eclipse{
         wtp{
             facet {
-                facet name: 'jst.cdi', version: '2.0'
                 facet name: 'jst.utility', version: '1.0'
             }
         }

@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.health.HealthCheckResponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -37,7 +38,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.lixbox.service.common.model.Instance;
-import fr.lixbox.service.registry.model.health.ServiceStatus;
 
 /**
  * Cette classe represente un entrée de service
@@ -101,10 +101,10 @@ public class ServiceEntry implements Serializable
     
     
     
-    public ServiceStatus getStatus()
+    public HealthCheckResponse.Status getStatus()
     {
         Optional<Instance> found = getInstances().stream().filter(x->x.isReady()).findFirst();
-        return found.isPresent()?ServiceStatus.UP:ServiceStatus.DOWN;                
+        return found.isPresent()?HealthCheckResponse.Status.UP:HealthCheckResponse.Status.DOWN;                
     }
     
     
